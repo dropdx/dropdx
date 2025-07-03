@@ -1,2 +1,11 @@
-packages: 
-  - "packages/*"
+packages:
+  - packages/*
+
+includeWorkspaceRoot: true
+
+linkWorkspacePackages: true
+
+onlyBuiltDependencies:
+  - lefthook
+
+sideEffectsCache: false

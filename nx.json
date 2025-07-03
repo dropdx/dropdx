@@ -6,9 +6,13 @@
       "sharedGlobals"
     ],
     "production": [
-      "default"
+      "default",
+      "!{projectRoot}/.eslintrc.json",
+      "!{projectRoot}/eslint.config.mjs"
     ],
-    "sharedGlobals": []
+    "sharedGlobals": [
+      "{workspaceRoot}/LICENSE"
+    ]
   },
   "nxCloudId": "6866ba7830e484659bb0d49f",
   "plugins": [
@@ -24,6 +28,12 @@
           "buildDepsName": "build-deps",
           "watchDepsName": "watch-deps"
         }
+      }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
       }
     }
   ]

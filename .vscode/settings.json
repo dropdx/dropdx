@@ -1,0 +1,238 @@
+{
+  "[dotenv]": {
+    "editor.defaultFormatter": "dotenv.dotenv-vscode"
+  },
+  "[ini]": {
+    "editor.defaultFormatter": "lkrms.inifmt"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "other": "on",
+      "strings": "on"
+    }
+  },
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format",
+    "editor.formatOnSave": true
+  },
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "conventionalCommits.emojiFormat": "emoji",
+  "conventionalCommits.gitmoji": true,
+  "conventionalCommits.promptBody": true,
+  "conventionalCommits.promptFooter": true,
+  "conventionalCommits.promptScopes": true,
+  "conventionalCommits.scopes": [
+    "config",
+    "shared"
+  ],
+  "conventionalCommits.showNewVersionNotes": true,
+  "conventionalCommits.storeScopesGlobally": false,
+  "editor.acceptSuggestionOnEnter": "smart",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "editor.formatOnSave": true,
+  "editor.inlineSuggest.enabled": true,
+  "editor.quickSuggestions": {
+    "comments": "on",
+    "other": "on",
+    "strings": "on"
+  },
+  "editor.renderWhitespace": "all",
+  "editor.rulers": [
+    80
+  ],
+  "editor.suggest.preview": true,
+  "editor.tabCompletion": "on",
+  "emojisense.languages": {
+    "git-commit": true,
+    "markdown": true,
+    "plaintext": true
+  },
+  "emojisense.markupCompletionsEnabled": true,
+  "emojisense.showOnColon": true,
+  "emojisense.unicodeCompletionsEnabled": true,
+  "eslint.debug": true,
+  "eslint.format.enable": true,
+  "eslint.run": "onSave",
+  "eslint.useFlatConfig": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "json",
+    "jsonc",
+    "markdown"
+  ],
+  "files.associations": {
+    ".czrc": "json",
+    ".dockerignore": "ignore",
+    ".editorconfig": "editorconfig",
+    ".env*": "dotenv",
+    ".gitattributes": "gitattributes",
+    ".gitignore": "gitignore",
+    ".gitlab-ci.yml": "yaml",
+    ".npmrc": "ini",
+    ".nvmrc": "plaintext",
+    ".vscode/*.json": "jsonc",
+    "*.bash": "shellscript",
+    "*.bat": "bat",
+    "*.cfg": "ini",
+    "*.cmd": "bat",
+    "*.conf": "ini",
+    "*.css": "css",
+    "*.csv": "csv",
+    "*.db": "sqlite",
+    "*.env": "dotenv",
+    "*.fish": "fish",
+    "*.htm": "html",
+    "*.html": "html",
+    "*.ini": "ini",
+    "*.ipynb": "jupyter",
+    "*.js": "javascript",
+    "*.json": "json",
+    "*.jsonc": "jsonc",
+    "*.jsx": "javascriptreact",
+    "*.less": "less",
+    "*.log": "log",
+    "*.md": "markdown",
+    "*.properties": "properties",
+    "*.ps1": "powershell",
+    "*.pxd": "cython",
+    "*.py": "python",
+    "*.pyd": "python",
+    "*.pyw": "python",
+    "*.pyx": "cython",
+    "*.rst": "restructuredtext",
+    "*.scss": "scss",
+    "*.sh": "shellscript",
+    "*.sql": "sql",
+    "*.sqlite": "sqlite",
+    "*.svg": "xml",
+    "*.tex": "latex",
+    "*.toml": "toml",
+    "*.ts": "typescript",
+    "*.tsv": "tsv",
+    "*.tsx": "typescriptreact",
+    "*.vue": "vue",
+    "*.xhtml": "html",
+    "*.xml": "xml",
+    "*.yaml": "yaml",
+    "*.yml": "yaml",
+    "*.zsh": "shellscript",
+    "docker-compose.yml": "yaml",
+    "Dockerfile": "dockerfile",
+    "Dockerfile*": "dockerfile",
+    "Jenkinsfile": "groovy",
+    "jsconfig*.json": "jsonc",
+    "LICENSE": "plaintext",
+    "Makefile": "makefile",
+    "Pipfile": "pipfile",
+    "Pipfile.lock": "json",
+    "pnpm-lock.yaml": "yaml",
+    "pnpm-workspace.yaml": "yaml",
+    "poetry.lock": "toml",
+    "pyproject.toml": "toml",
+    "requirements-*.txt": "pip-requirements",
+    "requirements.txt": "pip-requirements",
+    "tsconfig*.json": "jsonc"
+  },
+  "json.schemas": [
+    {
+      "fileMatch": [
+        ".czrc"
+      ],
+      "url": "https://json.schemastore.org/czrc.json"
+    },
+    {
+      "fileMatch": [
+        "pyproject.toml"
+      ],
+      "url": "https://json.schemastore.org/pyproject.json"
+    },
+    {
+      "fileMatch": [
+        "Pipfile"
+      ],
+      "url": "https://json.schemastore.org/pipfile.json"
+    },
+    {
+      "fileMatch": [
+        "Pipfile.lock"
+      ],
+      "url": "https://json.schemastore.org/pipfile-lock.json"
+    },
+    {
+      "fileMatch": [
+        "package.json",
+        "package-lock.json",
+        ".eslintrc.json",
+        ".babelrc",
+        ".babelrc.json",
+        "babel.config.json",
+        "jsconfig.json",
+        "tsconfig*.json",
+        "tslint.json",
+        ".prettierrc",
+        ".prettierrc.json",
+        "lerna.json",
+        "typedoc.json"
+      ],
+      "url": "http://json.schemastore.org/package"
+    },
+    {
+      "fileMatch": [
+        "renovate.json",
+        "renovate.json5",
+        ".renovaterc",
+        ".renovaterc.json"
+      ],
+      "url": "https://docs.renovatebot.com/renovate-schema.json"
+    }
+  ],
+  "nxConsole.generateAiAgentRules": true,
+  "shellformat.useEditorConfig": true,
+  "yaml.schemas": {
+    "https://json.schemastore.org/docker-compose.json": [
+      "docker-compose.yml",
+      "docker-compose.*.yml",
+      "compose.yml",
+      "compose.*.yml"
+    ],
+    "https://json.schemastore.org/github-workflow.json": [
+      ".github/workflows/*.yml",
+      ".github/workflows/*.yaml"
+    ],
+    "https://json.schemastore.org/lefthook.json": [
+      "lefthook.yml"
+    ],
+    "https://json.schemastore.org/pnpm-workspace.json": [
+      "pnpm-workspace.yaml"
+    ]
+  }
+}

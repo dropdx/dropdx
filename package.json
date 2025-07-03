@@ -1,17 +1,33 @@
 {
   "name": "@dropdx/source",
+  "nx": {},
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "prepare": "pnpm exec lefthook install",
+    "lint:workspace": "eslint .",
+    "fmt:workspace": "eslint --fix .",
+    "lint": "nx lint:workspace",
+    "fmt": "nx fmt:workspace"
+  },
   "private": true,
-  "dependencies": {},
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@nx/eslint": "21.2.2",
     "@nx/js": "21.2.2",
-    "@swc-node/register": "~1.9.1",
-    "@swc/core": "~1.5.7",
-    "@swc/helpers": "~0.5.11",
+    "@spellbookx/cspell-config": "^0.1.3",
+    "@spellbookx/eslint-plugin": "^0.1.3",
+    "@swc-node/register": "~1.9.2",
+    "@swc/core": "~1.5.29",
+    "@swc/helpers": "~0.5.17",
+    "commitizen": "^4.3.1",
+    "cspell": "^9.1.2",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^9.30.1",
+    "lefthook": "^1.11.16",
     "nx": "21.2.2",
-    "tslib": "^2.3.0",
-    "typescript": "~5.8.2"
+    "tslib": "^2.8.1",
+    "typescript": "~5.8.3"
   }
 }

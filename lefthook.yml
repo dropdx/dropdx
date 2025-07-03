@@ -1,0 +1,23 @@
+# lefthook.yml
+
+commit-msg:
+  commands:
+    'lint commit message':
+      run: pnpm commitlint --edit {1}
+
+pre-commit:
+  piped: true
+  commands:
+    eslint-check-unfixable:
+      glob: '**/*.{js,mjs,cjs,ts,mts,cts,md,json,jsonc,json5}'
+      exclude:
+        - node_modules
+        - dist
+      run: pnpm eslint {staged_files} --no-warn-ignored
+    eslint-fix-and-format:
+      glob: '**/*.{js,mjs,cjs,ts,mts,cts,md,json,jsonc,json5}'
+      exclude:
+        - node_modules
+        - dist
+      run: pnpm eslint --fix {staged_files}
+      stage_fixed: true
