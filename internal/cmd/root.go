@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -17,7 +18,15 @@ var cfgFile string
 var RootCmd = &cobra.Command{
 	Use:   "dropdx",
 	Short: "A cross-platform CLI to sync and update PATs and configurations.",
-	Long: `dropdx manages the synchronization and update of Personal Access Tokens (PAT) 
+	Long: `
+      _                 _      
+   __| |_ __ ___  _ __| |__  __
+  / _` + "`" + ` | '__/ _ \| '_ \ / _` + "`" + ` \/ /
+ | (_| | | | (_) | |_) | (_|  >  < 
+  \__,_|_|  \___/| .__/ \__,_/_/\_\
+                 |_|               
+
+dropdx manages the synchronization and update of Personal Access Tokens (PAT) 
 and configurations (e.g., .npmrc, environment variables) across different machines.`,
 }
 
@@ -35,6 +44,29 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $DROPDX_HOME/config.yaml or ~/.dropdx/config.yaml)")
+	
+	// Fancy up the help
+	cobra.AddTemplateFunc("style", color.New(color.FgCyan, color.Bold).SprintFunc())
+	RootCmd.SetHelpTemplate(`
+{{with (or .Long .Short)}}{{. | trimTrailingWhitespaces}}{{end}}
+
+{{style "Usage:"}}
+  {{.UseLine}}{{if .HasAvailableSubCommands}} {{style "[command]"}}{{end}}
+
+{{if .HasAvailableSubCommands}}{{style "Available Commands:"}}{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+  {{rpad .Name .NamePadding}} {{.Short}}{{end}}{{end}}{{end}}
+
+{{if .HasAvailableLocalFlags}}{{style "Flags:"}}
+{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}
+
+{{if .HasAvailableInheritedFlags}}{{style "Global Flags:"}}
+{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}
+
+{{if .HasHelpSubCommands}}{{style "Additional help topics:"}}{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}
+
+{{if .HasAvailableSubCommands}}Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
+`)
 }
 
 /**
@@ -61,6 +93,7 @@ func initConfig() {
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		// Just a subtle hint if config is loaded
+		// fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 }

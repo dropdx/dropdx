@@ -27,13 +27,13 @@ var setTokenCmd = &cobra.Command{
 		provider := args[0]
 		
 		// 1. Get token value securely
-		fmt.Printf("Enter token for %s: ", provider)
+		fmt.Printf("%s Enter token for %s: ", info("?"), info(provider))
 		
 		var tokenValue string
 		if term.IsTerminal(int(syscall.Stdin)) {
 			byteToken, err := term.ReadPassword(int(syscall.Stdin))
 			if err != nil {
-				return fmt.Errorf("\nfailed to read token: %w", err)
+				return fmt.Errorf("\n%s failed to read token: %w", errCrit("✖"), err)
 			}
 			fmt.Println() // Print newline after hidden input
 			tokenValue = string(byteToken)
@@ -45,19 +45,19 @@ var setTokenCmd = &cobra.Command{
 		}
 
 		if tokenValue == "" {
-			return fmt.Errorf("token value cannot be empty")
+			return fmt.Errorf("%s token value cannot be empty", errCrit("✖"))
 		}
 
 		// 2. Parse expiration
 		expiryDate, err := parseExpiration(tokenExp)
 		if err != nil {
-			return fmt.Errorf("invalid expiration format: %w", err)
+			return fmt.Errorf("%s invalid expiration format: %w", errCrit("✖"), err)
 		}
 
 		// 3. Load and update config
 		cfg, err := config.Load()
 		if err != nil {
-			return fmt.Errorf("failed to load config: %w", err)
+			return fmt.Errorf("%s failed to load config: %w", errCrit("✖"), err)
 		}
 
 		if cfg.Tokens == nil {
@@ -72,10 +72,14 @@ var setTokenCmd = &cobra.Command{
 
 		// 4. Save config
 		if err := config.Save(cfg); err != nil {
-			return fmt.Errorf("failed to save config: %w", err)
+			return fmt.Errorf("%s failed to save config: %w", errCrit("✖"), err)
 		}
 
-		fmt.Printf("✔ Token for '%s' saved successfully. Expiry: %s\n", provider, expiryDate)
+		expLabel := expiryDate
+		if expLabel == "" {
+			expLabel = "never"
+		}
+		fmt.Printf("%s Token for '%s' saved successfully. Expiry: %s\n", success("✔"), info(provider), info(expLabel))
 		return nil
 	},
 }

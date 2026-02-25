@@ -34,7 +34,7 @@ func runSync() error {
 	if home == "" {
 		userHome, err := os.UserHomeDir()
 		if err != nil {
-			return fmt.Errorf("failed to get user home directory: %w", err)
+			return fmt.Errorf("%s failed to get user home directory: %w", errCrit("✖"), err)
 		}
 		home = filepath.Join(userHome, ".dropdx")
 	}
@@ -42,25 +42,25 @@ func runSync() error {
 	// 1. Check if .git exists
 	gitDir := filepath.Join(home, ".git")
 	if _, err := os.Stat(gitDir); os.IsNotExist(err) {
-		fmt.Printf("ℹ %s is not a git repository.\n", home)
+		fmt.Printf("%s %s is not a git repository.\n", warn("ℹ"), home)
 		fmt.Println("To enable sync, initialize git in that directory:")
-		fmt.Printf("  cd %s\n  git init\n  git remote add origin <your-repo-url>\n", home)
+		fmt.Printf("  cd %s\n  git init\n  git remote add origin %s\n", home, info("<your-repo-url>"))
 		return nil
 	}
 
 	// 2. Perform git pull
-	fmt.Println("⬇ Pulling changes...")
+	fmt.Printf("%s Pulling changes...\n", info("⬇"))
 	if err := executeGit(home, "pull", "--rebase"); err != nil {
-		return fmt.Errorf("failed to pull: %w", err)
+		return fmt.Errorf("%s failed to pull: %w", errCrit("✖"), err)
 	}
 
 	// 3. Perform git push
-	fmt.Println("⬆ Pushing changes...")
+	fmt.Printf("%s Pushing changes...\n", info("⬆"))
 	if err := executeGit(home, "push"); err != nil {
-		return fmt.Errorf("failed to push: %w", err)
+		return fmt.Errorf("%s failed to push: %w", errCrit("✖"), err)
 	}
 
-	fmt.Println("✔ Sync completed successfully.")
+	fmt.Printf("%s Sync completed successfully.\n", success("✔"))
 	return nil
 }
 

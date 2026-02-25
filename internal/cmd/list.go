@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/dropdx/dropdx/internal/config"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -18,38 +19,46 @@ var listCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := config.Load()
 		if err != nil {
-			return fmt.Errorf("failed to load configuration: %w", err)
+			return fmt.Errorf("%s failed to load configuration: %w", errCrit("✖"), err)
 		}
 
 		if cfg == nil {
-			fmt.Println("ℹ No configuration found. Run 'dropdx init' first.")
+			fmt.Printf("%s No configuration found. Run '%s' first.\n", warn("ℹ"), info("dropdx init"))
 			return nil
 		}
 
+		header := color.New(color.FgWhite, color.Bold, color.Underline).PrintlnFunc()
+		tokenNameStyle := color.New(color.FgMagenta, color.Bold).SprintFunc()
+		valStyle := color.New(color.FgHiBlack).SprintFunc()
+		expStyle := color.New(color.FgYellow).SprintFunc()
+
 		// 1. List Tokens
-		fmt.Println("--- Tokens ---")
+		header("--- Tokens ---")
 		if len(cfg.Tokens) == 0 {
-			fmt.Println("No tokens defined.")
+			fmt.Println("  No tokens defined.")
 		} else {
 			for name, info := range cfg.Tokens {
 				obfuscated := obfuscate(info.Value)
 				expiryInfo := ""
 				if info.ExpiresAt != "" {
-					expiryInfo = fmt.Sprintf(" (Exp: %s)", info.ExpiresAt)
+					expiryInfo = expStyle(fmt.Sprintf(" [Exp: %s]", info.ExpiresAt))
 				}
-				fmt.Printf("  %s: %s%s\n", name, obfuscated, expiryInfo)
+				fmt.Printf("  %s %s%s\n", tokenNameStyle(name+":"), valStyle(obfuscated), expiryInfo)
 			}
 		}
 
 		// 2. List Providers
-		fmt.Println("\n--- Providers ---")
+		fmt.Println()
+		header("--- Providers ---")
 		if len(cfg.Providers) == 0 {
-			fmt.Println("No providers defined.")
+			fmt.Println("  No providers defined.")
 		} else {
 			for name, p := range cfg.Providers {
-				fmt.Printf("  %s:\n", name)
-				fmt.Printf("    Template: %s\n", p.Template)
-				fmt.Printf("    Target:   %s\n", p.Target)
+				fmt.Printf("  %s %s %s %s\n", 
+					tokenNameStyle(name+":"), 
+					info(p.Template), 
+					info("→"), 
+					info(p.Target))
 			}
 		}
 
