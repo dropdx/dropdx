@@ -70,6 +70,9 @@ providers:
   pypi:
     template: "templates/.pypirc.tmpl"
     target: "~/.pypirc"
+  docker:
+    template: "templates/.docker-config.json.tmpl"
+    target: "~/.docker/config.json"
 `)
 		if err := os.WriteFile(configPath, defaultConfig, 0644); err != nil {
 			return fmt.Errorf("failed to create default config file: %w", err)
@@ -97,6 +100,19 @@ password: {{.pypi}}
 		npmTmpl := []byte(`//registry.npmjs.org/:_authToken={{.npm}}
 `)
 		os.WriteFile(npmTmplPath, npmTmpl, 0644)
+	}
+
+	dockerTmplPath := filepath.Join(templatesDir, ".docker-config.json.tmpl")
+	if _, err := os.Stat(dockerTmplPath); os.IsNotExist(err) {
+		dockerTmpl := []byte(`{
+	"auths": {
+		"https://index.docker.io/v1/": {
+			"auth": "{{.docker}}"
+		}
+	}
+}
+`)
+		os.WriteFile(dockerTmplPath, dockerTmpl, 0644)
 	}
 
 	fmt.Println("\nInitialization complete. You can now use 'dropdx set-token pypi' and 'dropdx apply'.")
