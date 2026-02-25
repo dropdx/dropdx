@@ -28,11 +28,11 @@ func TestApplyProvider(t *testing.T) {
 		t.Fatalf("Failed to write test template: %v", err)
 	}
 
-	// 2. Setup configuration
+	// 2. Setup configuration with metadata structure
 	cfg := &config.Config{
-		Tokens: map[string]string{
-			"name":  "User",
-			"token": "secret123",
+		Tokens: map[string]config.TokenInfo{
+			"name":  {Value: "User"},
+			"token": {Value: "secret123"},
 		},
 		Providers: map[string]config.Provider{
 			"test": {

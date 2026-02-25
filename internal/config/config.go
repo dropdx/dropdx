@@ -7,14 +7,24 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 )
+
+/**
+ * TokenInfo holds the token value and its metadata.
+ */
+type TokenInfo struct {
+	Value     string `yaml:"value" mapstructure:"value"`
+	Name      string `yaml:"name" mapstructure:"name"`
+	ExpiresAt string `yaml:"expires_at" mapstructure:"expires_at"`
+}
 
 /**
  * Config represents the main structure of the config.yaml file.
  */
 type Config struct {
-	Tokens    map[string]string   `mapstructure:"tokens"`
-	Providers map[string]Provider `mapstructure:"providers"`
+	Tokens    map[string]TokenInfo `mapstructure:"tokens"`
+	Providers map[string]Provider  `mapstructure:"providers"`
 }
 
 /**
@@ -37,18 +47,33 @@ func Load() (*Config, error) {
 }
 
 /**
+ * Save writes the current configuration back to the config.yaml file.
+ * We use yaml.v3 directly to have more control over the output if needed.
+ */
+func Save(cfg *Config) error {
+	configPath := viper.ConfigFileUsed()
+	if configPath == "" {
+		return fmt.Errorf("no config file found to save to")
+	}
+
+	data, err := yaml.Marshal(cfg)
+	if err != nil {
+		return fmt.Errorf("failed to marshal config: %w", err)
+	}
+
+	return os.WriteFile(configPath, data, 0644)
+}
+
+/**
  * ResolvePath converts a path to an absolute path.
- * It handles the tilde (~) shorthand for the user's home directory.
  */
 func ResolvePath(path string) (string, error) {
 	if path == "" {
 		return "", nil
 	}
 
-	// Expand environment variables
 	path = os.ExpandEnv(path)
 
-	// Handle ~ shorthand
 	if strings.HasPrefix(path, "~") {
 		home, err := os.UserHomeDir()
 		if err != nil {
@@ -59,11 +84,9 @@ func ResolvePath(path string) (string, error) {
 			return home, nil
 		}
 		
-		// Ensure we handle both ~/path and ~path (though ~/ is standard)
 		if strings.HasPrefix(path, "~/") {
 			path = filepath.Join(home, path[2:])
 		} else {
-			// fallback for ~path without slash
 			path = filepath.Join(home, path[1:])
 		}
 	}

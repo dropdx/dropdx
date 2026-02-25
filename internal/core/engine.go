@@ -41,7 +41,13 @@ func (e *Engine) ApplyProvider(name string) error {
 		return fmt.Errorf("provider %s not found in configuration", name)
 	}
 
-	return p.Apply(e.Config.Tokens)
+	// Extract only values for the template engine
+	tokenValues := make(map[string]string)
+	for k, v := range e.Config.Tokens {
+		tokenValues[k] = v.Value
+	}
+
+	return p.Apply(tokenValues)
 }
 
 /**

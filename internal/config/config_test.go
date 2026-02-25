@@ -30,13 +30,10 @@ func TestResolvePath(t *testing.T) {
 				t.Fatalf("ResolvePath() error = %v", err)
 			}
 			
-			// On Windows, absolute paths might differ in drive letter or formatting
-			// so we check if it ends with the expected path for consistency in tests.
 			if !filepath.IsAbs(got) {
 				t.Errorf("ResolvePath() got = %v, want absolute path", got)
 			}
 			
-			// Simple check for our test cases
 			if tt.name == "Tilde path" && got != tt.expected {
 				t.Errorf("ResolvePath() got = %v, want %v", got, tt.expected)
 			}
@@ -48,12 +45,12 @@ func TestResolvePath(t *testing.T) {
  * TestLoad verifies that the configuration structure is correctly unmarshaled.
  */
 func TestLoad(t *testing.T) {
-	// This test depends on Viper state, which might be tricky in parallel.
-	// We'll skip complex Viper mocking for now and focus on structure.
 	cfg := &Config{
-		Tokens: map[string]string{"test": "val"},
+		Tokens: map[string]TokenInfo{
+			"test": {Value: "val"},
+		},
 	}
-	if cfg.Tokens["test"] != "val" {
+	if cfg.Tokens["test"].Value != "val" {
 		t.Errorf("Config structure mapping failed")
 	}
 }

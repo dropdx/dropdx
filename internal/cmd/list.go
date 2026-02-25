@@ -31,9 +31,13 @@ var listCmd = &cobra.Command{
 		if len(cfg.Tokens) == 0 {
 			fmt.Println("No tokens defined.")
 		} else {
-			for name, value := range cfg.Tokens {
-				obfuscated := obfuscate(value)
-				fmt.Printf("  %s: %s\n", name, obfuscated)
+			for name, info := range cfg.Tokens {
+				obfuscated := obfuscate(info.Value)
+				expiryInfo := ""
+				if info.ExpiresAt != "" {
+					expiryInfo = fmt.Sprintf(" (Exp: %s)", info.ExpiresAt)
+				}
+				fmt.Printf("  %s: %s%s\n", name, obfuscated, expiryInfo)
 			}
 		}
 
@@ -64,6 +68,5 @@ func obfuscate(val string) string {
 	if len(val) <= 8 {
 		return strings.Repeat("*", len(val))
 	}
-	// Show first 4 and last 4
 	return val[:4] + "..." + val[len(val)-4:]
 }
