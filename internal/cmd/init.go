@@ -57,23 +57,48 @@ func runInit() error {
 		defaultConfig := []byte(`# dropdx configuration
 # Personal Access Tokens (PAT)
 tokens:
-  # npm: "npm_your_token_here"
-  # github: "ghp_your_token_here"
+  # npm: 
+  #   value: "npm_..."
+  # pypi:
+  #   value: "pypi-..."
 
 # Provider configurations
 providers:
-  # npm:
-  #   template: "templates/.npmrc.tmpl"
-  #   target: "~/.npmrc"
+  npm:
+    template: "templates/.npmrc.tmpl"
+    target: "~/.npmrc"
+  pypi:
+    template: "templates/.pypirc.tmpl"
+    target: "~/.pypirc"
 `)
 		if err := os.WriteFile(configPath, defaultConfig, 0644); err != nil {
 			return fmt.Errorf("failed to create default config file: %w", err)
 		}
 		fmt.Printf("✔ Default config file created at: %s\n", configPath)
-	} else {
-		fmt.Println("ℹ config.yaml already exists, skipping.")
 	}
 
-	fmt.Println("\nInitialization complete. You can now edit your config.yaml and start adding templates.")
+	// 4. Create default templates
+	pypiTmplPath := filepath.Join(templatesDir, ".pypirc.tmpl")
+	if _, err := os.Stat(pypiTmplPath); os.IsNotExist(err) {
+		pypiTmpl := []byte(`[distutils]
+index-servers =
+    pypi
+
+[pypi]
+repository: https://upload.pypi.org/legacy/
+username: __token__
+password: {{.pypi}}
+`)
+		os.WriteFile(pypiTmplPath, pypiTmpl, 0644)
+	}
+
+	npmTmplPath := filepath.Join(templatesDir, ".npmrc.tmpl")
+	if _, err := os.Stat(npmTmplPath); os.IsNotExist(err) {
+		npmTmpl := []byte(`//registry.npmjs.org/:_authToken={{.npm}}
+`)
+		os.WriteFile(npmTmplPath, npmTmpl, 0644)
+	}
+
+	fmt.Println("\nInitialization complete. You can now use 'dropdx set-token pypi' and 'dropdx apply'.")
 	return nil
 }
