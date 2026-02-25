@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dcdavidev/dropdx/internal/config"
+	"github.com/dropdx/dropdx/internal/config"
 	"github.com/spf13/cobra"
 )
 

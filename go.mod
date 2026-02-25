@@ -1,4 +1,4 @@
-module github.com/dcdavidev/dropdx
+module github.com/dropdx/dropdx
 
 go 1.25.0
 
