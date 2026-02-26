@@ -1,0 +1,83 @@
+# .goreleaser.yaml
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: dropdx
+    main: ./apps/cli
+    binary: dropdx
+    env: [CGO_ENABLED=0]
+    goos: [linux, windows, darwin]
+    goarch: [amd64, arm64]
+
+archives:
+  - id: dropdx-archive
+    formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+sboms:
+  - disable: true
+
+nfpms:
+  - id: dropdx-nfpm
+    package_name: dropdx
+    formats: [deb, rpm, apk]
+    vendor: dcdavidev
+    homepage: https://github.com/dropdx/dropdx
+    maintainer: Davide Di Criscito <dcdavidev@gmail.com>
+    description: dropdx CLI
+    license: MIT
+
+snapcrafts:
+  - id: dropdx-snap
+    name: dropdx
+    summary: dropdx CLI
+    description: dropdx is a tool for managing project secrets and PATs.
+    grade: stable
+    confinement: strict
+    publish: true
+    apps:
+      dropdx:
+        command: dropdx
+        plugs: [network, home]
+
+brews:
+  - name: dropdx
+    repository:
+      owner: dcdavidev
+      name: homebrew-tap
+      token: "{{ .Env.GH_PAT }}"
+    directory: Formula
+    homepage: "https://github.com/dropdx/dropdx"
+    description: "dropdx CLI"
+    license: "MIT"
+    install: |
+      bin.install "dropdx"
+
+scoops:
+  - name: dropdx
+    repository:
+      owner: dcdavidev
+      name: scoop-bucket
+      token: "{{ .Env.GH_PAT }}"
+    homepage: "https://github.com/dropdx/dropdx"
+    description: "dropdx CLI"
+    license: "MIT"
+
+release:
+  github:
+    owner: dropdx
+    name: dropdx
+  replace_existing_artifacts: true
+
+changelog:
+  sort: asc
+  filters:
+    exclude: ["^docs:", "^test:"]
