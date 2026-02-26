@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/dropdx/dropdx/compare/v0.2.0...v0.2.1) (2026-02-26)
+
+### Features
+
+* enhance CLI with colors, spinners and a colorful banner ([556caf1](https://github.com/dropdx/dropdx/commit/556caf11654484db80d811a72a4392f3b6c16a73))
+* improve CLI branding and help (bastion style) ([5333a2b](https://github.com/dropdx/dropdx/commit/5333a2b6ca44d7d08a3bb93b04db62dc7bd83745))
+* refactor CLI to use pterm and bastion-style architecture ([9b9cdd3](https://github.com/dropdx/dropdx/commit/9b9cdd3fe36bef53a6aaa60d7dfc4e91bcb18639))
+
 ## 0.2.0 (2026-02-26)
 
 ### Features

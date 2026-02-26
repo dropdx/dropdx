@@ -1,6 +1,6 @@
 {
   "name": "dropdx",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "description": "dropdx CLI - Secure PATs and configuration management",
   "keywords": [
