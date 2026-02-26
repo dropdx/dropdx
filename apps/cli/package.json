@@ -1,6 +1,6 @@
 {
   "name": "dropdx",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "dropdx CLI - Secure PATs and configuration management",
   "keywords": [
@@ -25,8 +25,8 @@
   "type": "module",
   "main": "bin/index.js",
   "bin": {
-    "dropdx": "bin/index.js",
-    "dpdx": "bin/index.js"
+    "dpdx": "bin/index.js",
+    "dropdx": "bin/index.js"
   },
   "files": [
     "bin/",
