@@ -22,8 +22,12 @@ A cross-platform CLI tool to sync and update Personal Access Tokens (PATs) and c
 git clone https://github.com/dcdavidev/dropdx.git
 cd dropdx
 
-# Build the binary
-go build -o dropdx ./cmd/dropdx/main.go
+# Build the binary using pnpm/turbo (recommended)
+pnpm install
+pnpm build
+
+# OR build the binary using Go directly
+go build -o dropdx ./apps/cli/main.go
 
 # (Optional) Move to your PATH
 mv dropdx /usr/local/bin/

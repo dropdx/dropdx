@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/dropdx/dropdx/internal/config"
+	"github.com/dropdx/dropdx/packages/core/config"
 )
 
 /**

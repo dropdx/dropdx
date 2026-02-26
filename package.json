@@ -1,0 +1,20 @@
+{
+  "name": "root",
+  "version": "0.1.0",
+  "private": true,
+  "description": "dropdx is a cross-platform CLI to sync and update PATs and configurations.",
+  "license": "MIT",
+  "author": "dcdavidev",
+  "type": "module",
+  "scripts": {
+    "dropdx": "turbo build --filter=dropdx && ./dropdx",
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "fmt": "gofmt -w .",
+    "lint": "turbo lint"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.4"
+  },
+  "packageManager": "pnpm@10.4.1"
+}

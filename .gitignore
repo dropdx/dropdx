@@ -30,4 +30,11 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
-dropdx
+
+# Turborepo
+.turbo
+node_modules
+dist
+
+# Root binary
+/dropdx
