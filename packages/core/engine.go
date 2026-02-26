@@ -3,8 +3,8 @@ package core
 import (
 	"fmt"
 
-	"github.com/dropdx/dropdx/packages/core/config"
-	"github.com/dropdx/dropdx/packages/core/provider"
+	"github.com/dropdx/dropdx/packages/config"
+	"github.com/dropdx/dropdx/packages/provider"
 )
 
 /**

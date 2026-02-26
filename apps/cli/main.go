@@ -1,6 +1,6 @@
 package main
 
-import "github.com/dropdx/dropdx/packages/core/cmd"
+import "github.com/dropdx/dropdx/packages/cmd"
 
 /**
  * main is the entry point of the dropdx CLI tool.

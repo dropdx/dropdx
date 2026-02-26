@@ -14,7 +14,15 @@ importers:
 
   apps/cli: {}
 
+  packages/cmd: {}
+
+  packages/config: {}
+
   packages/core: {}
+
+  packages/filesystem: {}
+
+  packages/provider: {}
 
 packages:
 

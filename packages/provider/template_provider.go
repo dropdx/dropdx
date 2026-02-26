@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/dropdx/dropdx/packages/core/config"
+	"github.com/dropdx/dropdx/packages/config"
 )
 
 /**

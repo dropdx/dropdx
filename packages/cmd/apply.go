@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/dropdx/dropdx/packages/core/config"
-	"github.com/dropdx/dropdx/packages/core/core"
+	"github.com/dropdx/dropdx/packages/config"
+	"github.com/dropdx/dropdx/packages/core"
 	"github.com/spf13/cobra"
 )
 
