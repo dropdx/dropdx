@@ -22,7 +22,7 @@ func TestApplyProvider(t *testing.T) {
 
 	tmplPath := filepath.Join(tmpDir, "test.tmpl")
 	targetPath := filepath.Join(tmpDir, "output", "result.txt")
-	
+
 	tmplContent := "Hello {{.name}}, your token is {{.token}}!"
 	if err := os.WriteFile(tmplPath, []byte(tmplContent), 0644); err != nil {
 		t.Fatalf("Failed to write test template: %v", err)

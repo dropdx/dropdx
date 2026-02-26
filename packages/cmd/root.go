@@ -44,7 +44,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $DROPDX_HOME/config.yaml or ~/.dropdx/config.yaml)")
-	
+
 	// Fancy up the help
 	cobra.AddTemplateFunc("style", color.New(color.FgCyan, color.Bold).SprintFunc())
 	RootCmd.SetHelpTemplate(`

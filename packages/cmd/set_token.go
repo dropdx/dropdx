@@ -25,10 +25,10 @@ var setTokenCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		provider := args[0]
-		
+
 		// 1. Get token value securely
 		fmt.Printf("%s Enter token for %s: ", info("?"), info(provider))
-		
+
 		var tokenValue string
 		if term.IsTerminal(int(syscall.Stdin)) {
 			byteToken, err := term.ReadPassword(int(syscall.Stdin))
@@ -95,7 +95,7 @@ func init() {
  */
 func parseExpiration(exp string) (string, error) {
 	now := time.Now()
-	
+
 	switch strings.ToLower(exp) {
 	case "false", "none", "never":
 		return "", nil

@@ -54,10 +54,10 @@ var listCmd = &cobra.Command{
 			fmt.Println("  No providers defined.")
 		} else {
 			for name, p := range cfg.Providers {
-				fmt.Printf("  %s %s %s %s\n", 
-					tokenNameStyle(name+":"), 
-					info(p.Template), 
-					info("→"), 
+				fmt.Printf("  %s %s %s %s\n",
+					tokenNameStyle(name+":"),
+					info(p.Template),
+					info("→"),
 					info(p.Target))
 			}
 		}

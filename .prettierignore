@@ -1,0 +1,11 @@
+node_modules
+dist
+.turbo
+dropdx
+*.exe
+*.test
+*.out
+coverage.*
+go.mod
+go.sum
+**/*.go

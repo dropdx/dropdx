@@ -29,11 +29,11 @@ func TestResolvePath(t *testing.T) {
 			if err != nil {
 				t.Fatalf("ResolvePath() error = %v", err)
 			}
-			
+
 			if !filepath.IsAbs(got) {
 				t.Errorf("ResolvePath() got = %v, want absolute path", got)
 			}
-			
+
 			if tt.name == "Tilde path" && got != tt.expected {
 				t.Errorf("ResolvePath() got = %v, want %v", got, tt.expected)
 			}

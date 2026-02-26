@@ -7,13 +7,42 @@
   "author": "dcdavidev",
   "type": "module",
   "scripts": {
-    "dropdx": "turbo build --filter=dropdx && ./dropdx",
     "build": "turbo build",
     "dev": "turbo dev",
-    "fmt": "gofmt -w .",
-    "lint": "turbo lint"
+    "dropdx": "turbo build --filter=@dropdx/cli && ./dropdx",
+    "fmt": "pnpm run fmt:go && pnpm run fmt:workspace",
+    "fmt:go": "gofmt -w .",
+    "fmt:workspace": "pnpm dlx prettier --ignore-unknown --write .",
+    "lint": "pnpm dlx eslint --no-warn-ignored --fix .",
+    "lint:fmt": "pnpm run lint && pnpm run fmt"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-git"
+    }
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.4.2",
+    "@cspell/cspell-types": "^9.7.0",
+    "@prettier/plugin-xml": "^3.4.2",
+    "commitizen": "^4.3.1",
+    "commitlint-config-spellbookx": "^0.10.1",
+    "cspell": "^9.7.0",
+    "cspell-config-spellbookx": "^0.10.1",
+    "cz-git": "^1.12.0",
+    "eslint": "^10.0.2",
+    "eslint-plugin-spellbookx": "^0.10.1",
+    "lefthook": "^2.1.1",
+    "prettier": "^3.8.1",
+    "prettier-config-spellbookx": "^0.10.1",
+    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-ini": "^1.3.0",
+    "prettier-plugin-packagejson": "^3.0.0",
+    "prettier-plugin-prisma": "^5.0.0",
+    "prettier-plugin-properties": "^0.3.1",
+    "prettier-plugin-sh": "^0.18.0",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "prettier-plugin-toml": "^2.0.6",
     "turbo": "^2.4.4"
   },
   "packageManager": "pnpm@10.4.1"

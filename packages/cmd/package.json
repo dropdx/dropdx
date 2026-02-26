@@ -1,1 +1,5 @@
-{"name": "@dropdx/cmd", "version": "0.1.0", "private": true}
+{
+  "name": "@dropdx/cmd",
+  "version": "0.1.0",
+  "private": true
+}

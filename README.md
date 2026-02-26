@@ -49,13 +49,13 @@ Edit `~/.dropdx/config.yaml` to add your tokens and define providers:
 
 ```yaml
 tokens:
-  npm_token: "npm_..."
-  github_token: "ghp_..."
+  npm_token: 'npm_...'
+  github_token: 'ghp_...'
 
 providers:
   npm:
-    template: "templates/.npmrc.tmpl"
-    target: "~/.npmrc"
+    template: 'templates/.npmrc.tmpl'
+    target: '~/.npmrc'
 ```
 
 Create a template in `~/.dropdx/templates/.npmrc.tmpl`:
@@ -67,6 +67,7 @@ Create a template in `~/.dropdx/templates/.npmrc.tmpl`:
 ### Usage
 
 **Apply configurations:**
+
 ```bash
 dropdx apply npm
 # or apply all providers
@@ -74,6 +75,7 @@ dropdx apply
 ```
 
 **Sync with Git:**
+
 ```bash
 # First, initialize git in ~/.dropdx if you haven't
 cd ~/.dropdx
@@ -85,6 +87,7 @@ dropdx sync
 ```
 
 **List status:**
+
 ```bash
 dropdx list
 ```

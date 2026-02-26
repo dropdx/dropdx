@@ -79,11 +79,11 @@ func ResolvePath(path string) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("failed to get user home directory: %w", err)
 		}
-		
+
 		if path == "~" {
 			return home, nil
 		}
-		
+
 		if strings.HasPrefix(path, "~/") {
 			path = filepath.Join(home, path[2:])
 		} else {

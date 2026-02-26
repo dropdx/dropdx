@@ -113,7 +113,7 @@ password: {{.pypi}}
 }
 `)
 
-	fmt.Printf("\n%s Initialization complete. You can now use '%s' and '%s'.\n", 
+	fmt.Printf("\n%s Initialization complete. You can now use '%s' and '%s'.\n",
 		success("✨"), info("dropdx set-token <provider>"), info("dropdx apply"))
 	return nil
 }

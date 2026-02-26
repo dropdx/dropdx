@@ -1,1 +1,5 @@
-{"name": "@dropdx/provider", "version": "0.1.0", "private": true}
+{
+  "name": "@dropdx/provider",
+  "version": "0.1.0",
+  "private": true
+}

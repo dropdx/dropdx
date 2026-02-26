@@ -44,12 +44,12 @@ func (tp *TemplateProvider) Name() string {
 func (tp *TemplateProvider) Apply(tokens map[string]string) error {
 	// 1. Resolve paths
 	base := config.GetBaseDir()
-	
+
 	tmplPath := tp.template
 	if !filepath.IsAbs(tmplPath) && !strings.HasPrefix(tmplPath, "~") {
 		tmplPath = filepath.Join(base, tmplPath)
 	}
-	
+
 	resolvedTmpl, err := config.ResolvePath(tmplPath)
 	if err != nil {
 		return err
