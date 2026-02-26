@@ -25,7 +25,8 @@
   "type": "module",
   "main": "bin/index.js",
   "bin": {
-    "dropdx": "bin/index.js"
+    "dropdx": "bin/index.js",
+    "dpdx": "bin/index.js"
   },
   "files": [
     "bin/",

@@ -37,14 +37,14 @@ nfpms:
 
 snapcrafts:
   - id: dropdx-snap
-    name: dropdx
+    name: dpdx
     summary: dropdx CLI
     description: dropdx is a tool for managing project secrets and PATs.
     grade: stable
     confinement: strict
     publish: true
     apps:
-      dropdx:
+      dpdx:
         command: dropdx
         plugs: [network, home]
 
