@@ -1,0 +1,106 @@
+name: pipeline
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+      - uses: pnpm/action-setup@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+      - name: Build All (Monorepo)
+        run: pnpm build
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install GoReleaser
+        run: go install github.com/goreleaser/goreleaser/v2@latest
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Snapcraft
+        run: sudo snap install snapcraft --classic
+
+      - name: Run GoReleaser
+        run: goreleaser release --clean --skip=validate
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+
+      - name: Publish CLI to NPM
+        run: |
+          cd apps/cli
+          # Create directories for each platform matching the wrapper expectation
+          mkdir -p bin/darwin_amd64_v1 bin/darwin_arm64 bin/linux_amd64_v1 bin/linux_arm64 bin/windows_amd64_v1 bin/windows_arm64
+          
+          # Copy binaries from GoReleaser dist folder
+          cp ../../dist/dropdx_darwin_amd64*/dropdx bin/darwin_amd64_v1/ 2>/dev/null || :
+          cp ../../dist/dropdx_darwin_arm64*/dropdx bin/darwin_arm64/ 2>/dev/null || :
+          cp ../../dist/dropdx_linux_amd64*/dropdx bin/linux_amd64_v1/ 2>/dev/null || :
+          cp ../../dist/dropdx_linux_arm64*/dropdx bin/linux_arm64/ 2>/dev/null || :
+          cp ../../dist/dropdx_windows_amd64*/dropdx.exe bin/windows_amd64_v1/ 2>/dev/null || :
+          cp ../../dist/dropdx_windows_arm64*/dropdx.exe bin/windows_arm64/ 2>/dev/null || :
+          
+          # Set executable permissions
+          chmod +x bin/darwin_amd64_v1/dropdx 2>/dev/null || :
+          chmod +x bin/darwin_arm64/dropdx 2>/dev/null || :
+          chmod +x bin/linux_amd64_v1/dropdx 2>/dev/null || :
+          chmod +x bin/linux_arm64/dropdx 2>/dev/null || :
+          
+          pnpm publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
