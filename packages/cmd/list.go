@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/dropdx/dropdx/packages/config"
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -27,13 +26,8 @@ var listCmd = &cobra.Command{
 			return nil
 		}
 
-		header := color.New(color.FgWhite, color.Bold, color.Underline).PrintlnFunc()
-		tokenNameStyle := color.New(color.FgMagenta, color.Bold).SprintFunc()
-		valStyle := color.New(color.FgHiBlack).SprintFunc()
-		expStyle := color.New(color.FgYellow).SprintFunc()
-
 		// 1. List Tokens
-		header("--- Tokens ---")
+		fmt.Println(header("--- Tokens ---"))
 		if len(cfg.Tokens) == 0 {
 			fmt.Println("  No tokens defined.")
 		} else {
@@ -41,21 +35,21 @@ var listCmd = &cobra.Command{
 				obfuscated := obfuscate(info.Value)
 				expiryInfo := ""
 				if info.ExpiresAt != "" {
-					expiryInfo = expStyle(fmt.Sprintf(" [Exp: %s]", info.ExpiresAt))
+					expiryInfo = warn(fmt.Sprintf(" [Exp: %s]", info.ExpiresAt))
 				}
-				fmt.Printf("  %s %s%s\n", tokenNameStyle(name+":"), valStyle(obfuscated), expiryInfo)
+				fmt.Printf("  %s %s%s\n", tokenStyle(name+":"), muted(obfuscated), expiryInfo)
 			}
 		}
 
 		// 2. List Providers
 		fmt.Println()
-		header("--- Providers ---")
+		fmt.Println(header("--- Providers ---"))
 		if len(cfg.Providers) == 0 {
 			fmt.Println("  No providers defined.")
 		} else {
 			for name, p := range cfg.Providers {
 				fmt.Printf("  %s %s %s %s\n",
-					tokenNameStyle(name+":"),
+					tokenStyle(name+":"),
 					info(p.Template),
 					info("→"),
 					info(p.Target))
@@ -67,7 +61,7 @@ var listCmd = &cobra.Command{
 }
 
 func init() {
-	RootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(listCmd)
 }
 
 /**

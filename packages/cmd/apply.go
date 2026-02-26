@@ -56,5 +56,5 @@ if none is specified. It replaces tokens in templates with actual values.`,
 }
 
 func init() {
-	RootCmd.AddCommand(applyCmd)
+	rootCmd.AddCommand(applyCmd)
 }

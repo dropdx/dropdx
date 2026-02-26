@@ -25,7 +25,7 @@ to synchronize templates and tokens across different machines.`,
 }
 
 func init() {
-	RootCmd.AddCommand(syncCmd)
+	rootCmd.AddCommand(syncCmd)
 }
 
 /**

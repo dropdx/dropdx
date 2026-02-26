@@ -87,7 +87,7 @@ var setTokenCmd = &cobra.Command{
 func init() {
 	setTokenCmd.Flags().StringVar(&tokenName, "name", "", "Descriptive name for the token")
 	setTokenCmd.Flags().StringVar(&tokenExp, "exp", "30d", "Expiration duration (7d, 30d, 60d, 90d, false) or custom date (YYYY-MM-DD)")
-	RootCmd.AddCommand(setTokenCmd)
+	rootCmd.AddCommand(setTokenCmd)
 }
 
 /**

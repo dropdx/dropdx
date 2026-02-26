@@ -22,7 +22,7 @@ the templates directory, and default config files.`,
 }
 
 func init() {
-	RootCmd.AddCommand(initCmd)
+	rootCmd.AddCommand(initCmd)
 }
 
 /**
