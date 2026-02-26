@@ -17,10 +17,11 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number of dropdx",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("dropdx version %s\n", Version)
+		fmt.Printf("dropdx %s\n", Version)
 	},
 }
 
 func init() {
+	RootCmd.Version = Version
 	RootCmd.AddCommand(versionCmd)
 }

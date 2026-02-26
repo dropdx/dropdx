@@ -19,6 +19,7 @@ var (
 	errCrit = color.New(color.FgRed, color.Bold).SprintFunc()
 	bold    = color.New(color.Bold).SprintFunc()
 	muted   = color.New(color.FgHiBlack).SprintFunc()
+	accent  = color.New(color.FgYellow, color.Bold).SprintFunc()
 )
 
 /**
@@ -33,20 +34,22 @@ var RootCmd = &cobra.Command{
 %s %s
 %s %s
 %s %s
-%s %s
-%s %s
+%s
+%s
+%s
 %s
 
-dropdx manages the synchronization and update of Personal Access Tokens (PAT) 
+dropdx manages the synchronization and update of Personal Access Tokens (PAT)
 and configurations (e.g., .npmrc, environment variables) across different machines.`,
-		color.CyanString("      _                 _      "),
-		color.CyanString("   __| |_ __ ___  _ __| |__  "), color.CyanString("__"),
-		color.CyanString("  / _` | '__/ _ \\| '_ \\ / _` "), color.CyanString("\\/ /"),
-		color.CyanString(" | (_| | | | (_) | |_) | (_| "), color.CyanString(" >  < "),
-		color.CyanString("  \\__,_|_|  \\___/| .__/ \\__,_"), color.CyanString("/_/\\_\\"),
-		color.CyanString("                 |_|               "),
+		color.YellowString("      _                 _"),
+		color.YellowString("   __| |_ __ ___  _ __| |__  "), color.YellowString("__"),
+		color.YellowString("  / _` | '__/ _ \\| '_ \\ / _` "), color.YellowString("\\/ /"),
+		color.YellowString(" | (_| | | | (_) | |_) | (_| "), color.YellowString(" >  <"),
+		color.YellowString("  \\__,_|_|  \\___/| .__/ \\__,_"), color.YellowString("/_/\\_\\"),
+		color.YellowString("                 |_|"),
 		"",
 		muted("The secure fortress for your development tokens."),
+		"",
 	),
 }
 
@@ -55,6 +58,12 @@ and configurations (e.g., .npmrc, environment variables) across different machin
  * It is called by main.main(). It only needs to happen once to the RootCmd.
  */
 func Execute() {
+	// If no args are provided, show the banner (Long description)
+	if len(os.Args) == 1 {
+		fmt.Println(RootCmd.Long)
+		return
+	}
+
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Printf("\n%s %s\n", errCrit("✖ Error:"), err.Error())
 		os.Exit(1)
@@ -67,26 +76,28 @@ func init() {
 
 	// Fancy up the help
 	cobra.AddTemplateFunc("style", color.New(color.FgCyan, color.Bold).SprintFunc())
+	cobra.AddTemplateFunc("accent", color.New(color.FgYellow, color.Bold).SprintFunc())
 	RootCmd.SetHelpTemplate(`
-{{with (or .Long .Short)}}{{. | trimTrailingWhitespaces}}{{end}}
+{{.Short}}
 
-{{style "Usage:"}}
-  {{.UseLine}}{{if .HasAvailableSubCommands}} {{style "[command]"}}{{end}}
+{{accent "Usage:"}}
+  {{.UseLine}}{{if .HasAvailableSubCommands}} {{accent "[command]"}}{{end}}
 
-{{if .HasAvailableSubCommands}}{{style "Available Commands:"}}{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+{{if .HasAvailableSubCommands}}{{accent "Available Commands:"}}{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
   {{rpad .Name .NamePadding}} {{.Short}}{{end}}{{end}}{{end}}
 
-{{if .HasAvailableLocalFlags}}{{style "Flags:"}}
+{{if .HasAvailableLocalFlags}}{{accent "Flags:"}}
 {{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}
 
-{{if .HasAvailableInheritedFlags}}{{style "Global Flags:"}}
+{{if .HasAvailableInheritedFlags}}{{accent "Global Flags:"}}
 {{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}
 
-{{if .HasHelpSubCommands}}{{style "Additional help topics:"}}{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
+{{if .HasHelpSubCommands}}{{accent "Additional help topics:"}}{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
   {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}
 
 {{if .HasAvailableSubCommands}}Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
 `)
+	RootCmd.SetVersionTemplate("dropdx {{.Version}}\n")
 }
 
 /**
