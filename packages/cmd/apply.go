@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/dropdx/dropdx/packages/config"
 	"github.com/dropdx/dropdx/packages/core"
 	"github.com/spf13/cobra"
@@ -36,8 +38,20 @@ if none is specified. It replaces tokens in templates with actual values.`,
 			return engine.ApplyProvider(providerName)
 		}
 
-		// Apply all
-		return engine.ApplyAll()
+		// Apply all with spinner
+		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+		s.Suffix = " Applying all configurations..."
+		s.Color("cyan")
+		s.Start()
+		
+		err = engine.ApplyAll()
+		s.Stop()
+		
+		if err == nil {
+			fmt.Printf("\n%s All configurations applied successfully.\n", success("✨"))
+		}
+		
+		return err
 	},
 }
 

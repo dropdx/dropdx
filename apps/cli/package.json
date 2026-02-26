@@ -1,7 +1,7 @@
 {
   "name": "dropdx",
   "version": "0.2.0",
-  "private": true,
+  "private": false,
   "description": "dropdx CLI - Secure PATs and configuration management",
   "keywords": [
     "tokens",
@@ -35,5 +35,12 @@
   ],
   "scripts": {
     "build": "go build -o ../../dropdx main.go"
+  },
+  "dependencies": {
+    "picocolors": "^1.1.1",
+    "yocto-spinner": "^0.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

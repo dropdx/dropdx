@@ -5,6 +5,7 @@ import (
 
 	"github.com/dropdx/dropdx/packages/config"
 	"github.com/dropdx/dropdx/packages/provider"
+	"github.com/fatih/color"
 )
 
 /**
@@ -55,7 +56,7 @@ func (e *Engine) ApplyProvider(name string) error {
  */
 func (e *Engine) ApplyAll() error {
 	if len(e.providers) == 0 {
-		fmt.Println("ℹ No providers configured. Add some in your config.yaml.")
+		fmt.Printf("%s No providers configured. Add some in your config.yaml.\n", color.HiBlackString("ℹ"))
 		return nil
 	}
 

@@ -1,9 +1,11 @@
 package main
 
-import "github.com/dropdx/dropdx/packages/cmd"
+import (
+	"github.com/dropdx/dropdx/packages/cmd"
+)
 
 /**
- * main is the entry point of the dropdx CLI tool.
+ * dropdx - The secure fortress for your development tokens.
  */
 func main() {
 	cmd.Execute()

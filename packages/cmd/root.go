@@ -12,22 +12,42 @@ import (
 
 var cfgFile string
 
+var (
+	success = color.New(color.FgGreen, color.Bold).SprintFunc()
+	info    = color.New(color.FgCyan).SprintFunc()
+	warn    = color.New(color.FgYellow).SprintFunc()
+	errCrit = color.New(color.FgRed, color.Bold).SprintFunc()
+	bold    = color.New(color.Bold).SprintFunc()
+	muted   = color.New(color.FgHiBlack).SprintFunc()
+)
+
 /**
  * RootCmd represents the base command when called without any subcommands.
  */
 var RootCmd = &cobra.Command{
 	Use:   "dropdx",
 	Short: "A cross-platform CLI to sync and update PATs and configurations.",
-	Long: `
-      _                 _      
-   __| |_ __ ___  _ __| |__  __
-  / _` + "`" + ` | '__/ _ \| '_ \ / _` + "`" + ` \/ /
- | (_| | | | (_) | |_) | (_|  >  < 
-  \__,_|_|  \___/| .__/ \__,_/_/\_\
-                 |_|               
+	Long: fmt.Sprintf(`
+%s
+%s %s
+%s %s
+%s %s
+%s %s
+%s %s
+%s %s
+%s
 
 dropdx manages the synchronization and update of Personal Access Tokens (PAT) 
 and configurations (e.g., .npmrc, environment variables) across different machines.`,
+		color.CyanString("      _                 _      "),
+		color.CyanString("   __| |_ __ ___  _ __| |__  "), color.CyanString("__"),
+		color.CyanString("  / _` | '__/ _ \\| '_ \\ / _` "), color.CyanString("\\/ /"),
+		color.CyanString(" | (_| | | | (_) | |_) | (_| "), color.CyanString(" >  < "),
+		color.CyanString("  \\__,_|_|  \\___/| .__/ \\__,_"), color.CyanString("/_/\\_\\"),
+		color.CyanString("                 |_|               "),
+		"",
+		muted("The secure fortress for your development tokens."),
+	),
 }
 
 /**
@@ -36,7 +56,7 @@ and configurations (e.g., .npmrc, environment variables) across different machin
  */
 func Execute() {
 	if err := RootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Printf("\n%s %s\n", errCrit("✖ Error:"), err.Error())
 		os.Exit(1)
 	}
 }

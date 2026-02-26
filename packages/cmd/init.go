@@ -5,15 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-)
-
-var (
-	success = color.New(color.FgGreen, color.Bold).SprintFunc()
-	info    = color.New(color.FgCyan).SprintFunc()
-	warn    = color.New(color.FgYellow).SprintFunc()
-	errCrit = color.New(color.FgRed, color.Bold).SprintFunc()
 )
 
 /**

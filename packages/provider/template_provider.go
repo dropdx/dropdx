@@ -9,6 +9,7 @@ import (
 	"text/template"
 
 	"github.com/dropdx/dropdx/packages/config"
+	"github.com/fatih/color"
 )
 
 /**
@@ -86,6 +87,9 @@ func (tp *TemplateProvider) Apply(tokens map[string]string) error {
 		return fmt.Errorf("failed to write target file %s: %w", resolvedTarget, err)
 	}
 
-	fmt.Printf("✔ Applied provider: %s -> %s\n", tp.name, resolvedTarget)
+	fmt.Printf("%s Applied %s -> %s\n", 
+		color.GreenString("✔"), 
+		color.MagentaString(tp.name), 
+		color.CyanString(resolvedTarget))
 	return nil
 }

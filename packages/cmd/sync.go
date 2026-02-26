@@ -5,7 +5,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +36,7 @@ func runSync() error {
 	if home == "" {
 		userHome, err := os.UserHomeDir()
 		if err != nil {
-			return fmt.Errorf("%s failed to get user home directory: %w", errCrit("✖"), err)
+			return fmt.Errorf("failed to get user home directory: %w", err)
 		}
 		home = filepath.Join(userHome, ".dropdx")
 	}
@@ -48,19 +50,31 @@ func runSync() error {
 		return nil
 	}
 
+	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+	s.Suffix = " Pulling changes..."
+	s.Color("cyan")
+	s.Start()
+
 	// 2. Perform git pull
-	fmt.Printf("%s Pulling changes...\n", info("⬇"))
 	if err := executeGit(home, "pull", "--rebase"); err != nil {
-		return fmt.Errorf("%s failed to pull: %w", errCrit("✖"), err)
+		s.Stop()
+		return fmt.Errorf("failed to pull: %w", err)
 	}
+	s.Stop()
+	fmt.Printf("%s Pulled changes successfully.\n", success("✔"))
+
+	s.Suffix = " Pushing changes..."
+	s.Restart()
 
 	// 3. Perform git push
-	fmt.Printf("%s Pushing changes...\n", info("⬆"))
 	if err := executeGit(home, "push"); err != nil {
-		return fmt.Errorf("%s failed to push: %w", errCrit("✖"), err)
+		s.Stop()
+		return fmt.Errorf("failed to push: %w", err)
 	}
+	s.Stop()
+	fmt.Printf("%s Pushed changes successfully.\n", success("✔"))
 
-	fmt.Printf("%s Sync completed successfully.\n", success("✔"))
+	fmt.Printf("\n%s Sync completed successfully.\n", success("✨"))
 	return nil
 }
 
