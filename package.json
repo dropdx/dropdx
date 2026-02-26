@@ -9,7 +9,7 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "dropdx": "turbo build --filter=@dropdx/cli && ./dropdx",
+    "dropdx": "turbo build --filter=dropdx && ./dropdx",
     "fmt": "pnpm run fmt:go && pnpm run fmt:workspace",
     "fmt:go": "gofmt -w .",
     "fmt:workspace": "pnpm dlx prettier --ignore-unknown --write .",

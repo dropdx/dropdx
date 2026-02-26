@@ -1,7 +1,37 @@
 {
-  "name": "@dropdx/cli",
+  "name": "dropdx",
   "version": "0.1.0",
   "private": true,
+  "description": "dropdx CLI - Secure PATs and configuration management",
+  "keywords": [
+    "tokens",
+    "pats",
+    "cli",
+    "security",
+    "sync",
+    "config",
+    "injection"
+  ],
+  "homepage": "https://github.com/dropdx/dropdx#readme",
+  "bugs": {
+    "url": "https://github.com/dropdx/dropdx/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dropdx/dropdx.git"
+  },
+  "license": "MIT",
+  "author": "dcdavidev",
+  "type": "module",
+  "main": "bin/index.js",
+  "bin": {
+    "dropdx": "bin/index.js"
+  },
+  "files": [
+    "bin/",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "go build -o ../../dropdx main.go"
   }
