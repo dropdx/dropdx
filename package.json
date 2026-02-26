@@ -14,7 +14,9 @@
     "fmt:go": "gofmt -w .",
     "fmt:workspace": "pnpm dlx prettier --ignore-unknown --write .",
     "lint": "pnpm dlx eslint --no-warn-ignored --fix .",
-    "lint:fmt": "pnpm run lint && pnpm run fmt"
+    "lint:fmt": "pnpm run lint && pnpm run fmt",
+    "prepare": "lefthook install",
+    "release": "LEFTHOOK=\"0\" release-it"
   },
   "config": {
     "commitizen": {
