@@ -1,9 +1,13 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -11,6 +15,11 @@ import (
 )
 
 var cfgFile string
+
+type UpdateCache struct {
+	LastCheck     time.Time `json:"last_check"`
+	LatestVersion string    `json:"latest_version"`
+}
 
 var rootCmd = &cobra.Command{
 	Use:   "dropdx",
@@ -119,5 +128,67 @@ func initConfig() {
  * CheckForUpdates checks if a newer version of dropdx is available.
  */
 func CheckForUpdates() {
-	// Placeholder for update check logic
+	cachePath := filepath.Join(filepath.Dir(viper.ConfigFileUsed()), ".update_cache.json")
+	if viper.ConfigFileUsed() == "" {
+		// Fallback to default config path if config not loaded yet
+		home, _ := os.UserHomeDir()
+		cachePath = filepath.Join(home, ".dropdx", ".update_cache.json")
+	}
+
+	var cache UpdateCache
+	if data, err := os.ReadFile(cachePath); err == nil {
+		_ = json.Unmarshal(data, &cache)
+	}
+
+	// Only check once every 24 hours
+	if time.Since(cache.LastCheck) < 24*time.Hour && cache.LatestVersion != "" {
+		if isNewerVersion(Version, cache.LatestVersion) {
+			displayUpdateMessage(cache.LatestVersion)
+		}
+		return
+	}
+
+	// Fetch latest version from GitHub API
+	client := &http.Client{Timeout: 2 * time.Second}
+	resp, err := client.Get("https://api.github.com/repos/dropdx/dropdx/releases/latest")
+	if err != nil {
+		return // Silently fail on network issues
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return
+	}
+
+	var release struct {
+		TagName string `json:"tag_name"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
+		return
+	}
+
+	cache.LastCheck = time.Now()
+	cache.LatestVersion = release.TagName
+	if data, err := json.Marshal(cache); err == nil {
+		_ = os.MkdirAll(filepath.Dir(cachePath), 0755)
+		_ = os.WriteFile(cachePath, data, 0644)
+	}
+
+	if isNewerVersion(Version, cache.LatestVersion) {
+		displayUpdateMessage(cache.LatestVersion)
+	}
+}
+
+func isNewerVersion(current, latest string) bool {
+	current = strings.TrimPrefix(current, "v")
+	latest = strings.TrimPrefix(latest, "v")
+	if current == "" || latest == "" {
+		return false
+	}
+	return current != latest // Simple check, could be improved with semantic versioning parser
+}
+
+func displayUpdateMessage(latest string) {
+	pterm.Warning.Printf("A new version of dropdx is available: %s (current: %s)\n", pterm.Cyan(latest), pterm.Gray(Version))
+	pterm.Info.Printf("Download it from: %s\n\n", pterm.LightBlue("https://github.com/dropdx/dropdx/releases/latest"))
 }
