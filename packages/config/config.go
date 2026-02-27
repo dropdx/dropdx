@@ -14,9 +14,10 @@ import (
  * TokenInfo holds the token value and its metadata.
  */
 type TokenInfo struct {
-	Value     string `yaml:"value" mapstructure:"value"`
-	Name      string `yaml:"name" mapstructure:"name"`
-	ExpiresAt string `yaml:"expires_at" mapstructure:"expires_at"`
+	Value      string               `yaml:"value,omitempty" mapstructure:"value"`
+	Name       string               `yaml:"name,omitempty" mapstructure:"name"`
+	ExpiresAt  string               `yaml:"expires_at,omitempty" mapstructure:"expires_at"`
+	Registries map[string]TokenInfo `yaml:"registries,omitempty" mapstructure:"registries"`
 }
 
 /**
