@@ -1,0 +1,29 @@
+name: dpdx
+base: core24
+version: '0.3.1'
+summary: dropdx CLI
+description: |
+  dropdx is a tool for managing project secrets and PATs.
+  It manages the synchronization and update of Personal Access Tokens (PAT)
+  and configurations across different machines.
+
+grade: stable
+confinement: strict
+
+apps:
+  dpdx:
+    command: bin/dropdx
+    plugs:
+      - network
+      - home
+
+parts:
+  dropdx:
+    source: .
+    plugin: go
+    go-channel: latest/stable
+    build-packages:
+      - golang-go
+    override-build: |
+      cd apps/cli
+      go build -o $CRAFT_PART_INSTALL/bin/dropdx main.go
