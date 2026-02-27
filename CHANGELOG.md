@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.4.0](https://github.com/dropdx/dropdx/compare/v0.3.3...v0.4.0) (2026-02-27)
+
+### Features
+
+* add dropdx create machine command and machines configuration ([9a56cfd](https://github.com/dropdx/dropdx/commit/9a56cfdae4ba0c03a7303b817c2beefa6095ff11))
+* add shell source advice and fix build errors ([c5c751a](https://github.com/dropdx/dropdx/commit/c5c751abbe2d9b9003d6da08801efebc953bbaca))
+* add ssh-config and remotes management commands ([e4f1c2b](https://github.com/dropdx/dropdx/commit/e4f1c2bc65cce675133eb4dff25389c646fdb679))
+* add sync ssh-keys command ([a1f538a](https://github.com/dropdx/dropdx/commit/a1f538a4673dc9f825251ca9352b00504dcba011))
+* add version check to dropdx ([d1b6df6](https://github.com/dropdx/dropdx/commit/d1b6df6889052e8f83abffff599df0e6b92c8b11))
+* auto-create .gitignore during dropdx init ([89cf3c8](https://github.com/dropdx/dropdx/commit/89cf3c8c273e954f40ebd09ee91c8f7c3bd594d6))
+* improve apply interactive mode and pass nested tokens to templates ([a836d29](https://github.com/dropdx/dropdx/commit/a836d29203ad564f31bd0e9d9c1b3338c0725355))
+* make all commands interactive ([d43b30a](https://github.com/dropdx/dropdx/commit/d43b30a0a8e8dc20ab98aa82832a89edf8e0a8cf))
+* make set-token interactive and support multiple npm registries ([9a28508](https://github.com/dropdx/dropdx/commit/9a28508f93fc7b1dd2bb1f837b0489aeaa00b4ee))
+* rename create ssh-config to create remote ([5fb6e77](https://github.com/dropdx/dropdx/commit/5fb6e77a82415f2bb7155faa72cf46f81b2428b8))
+* restructure sync command and add repository subcommand with autostash ([4e12e03](https://github.com/dropdx/dropdx/commit/4e12e03c384c38233e5b606565f527a3c1cddb3f))
+* support appending/updating shell config files and add github provider ([4a43062](https://github.com/dropdx/dropdx/commit/4a430629eb59baef2868595b18e44c5b807f1ed7))
+
+### Bug Fixes
+
+* ensure github provider and template are always available for apply ([504f451](https://github.com/dropdx/dropdx/commit/504f4513a32b874c573b3caea606ed558cc0b7dd))
+* ensure github provider is always available in apply ([acc9d36](https://github.com/dropdx/dropdx/commit/acc9d368bf26089324a1b0fc2a52da42a7b98650))
+* ensure provider name key is populated in templates for multi-registry ([50f6c08](https://github.com/dropdx/dropdx/commit/50f6c0844d9b82c9b010c0fb662e8f0ba36e9caf))
+* force rebuild and add debug marker ([bf15ddc](https://github.com/dropdx/dropdx/commit/bf15ddcc7df4d5cba6fcca74c4055716ad3c7eb7))
+* resolve build errors in apply and list commands ([0527837](https://github.com/dropdx/dropdx/commit/0527837ce85e073b83b1fc5b598c17cb30701ccf))
+* resolve build errors in engine.go ([e927ede](https://github.com/dropdx/dropdx/commit/e927ededd0689ce6353596048af399a5110a2aaf))
+* ultra-robust token mapping for multi-registry npm templates ([1318210](https://github.com/dropdx/dropdx/commit/1318210fa296adc3d012fa28305d8e2766ae10fd))
+* use yaml.Unmarshal directly to fix map keys with dots ([732c46e](https://github.com/dropdx/dropdx/commit/732c46e96a23f7f7ec9ec3e5fd6ed8c4fc2d366f))
+
 ## [0.3.3](https://github.com/dropdx/dropdx/compare/v0.3.2...v0.3.3) (2026-02-27)
 
 ## [0.3.2](https://github.com/dropdx/dropdx/compare/v0.3.1...v0.3.2) (2026-02-27)

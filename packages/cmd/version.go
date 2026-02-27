@@ -8,7 +8,7 @@ import (
 
 // Version is the current version of dropdx.
 // This can be overridden at build time using ldflags.
-var Version = "v0.3.3"
+var Version = "v0.4.0"
 
 /**
  * versionCmd represents the version command.
