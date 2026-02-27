@@ -83,6 +83,9 @@ providers:
   docker:
     template: "templates/.docker-config.json.tmpl"
     target: "~/.docker/config.json"
+  github:
+    template: "templates/github.tmpl"
+    target: "~/.bashrc"
 `)
 		if err := os.WriteFile(configPath, defaultConfig, 0644); err != nil {
 			return fmt.Errorf("%s failed to create default config file: %w", errCrit("✖"), err)
@@ -93,6 +96,7 @@ providers:
 	}
 
 	// 4. Create default templates
+	createTemplate(filepath.Join(templatesDir, "github.tmpl"), `export GITHUB_TOKEN="{{.github}}"`)
 	createTemplate(filepath.Join(templatesDir, ".pypirc.tmpl"), `[distutils]
 index-servers =
     pypi

@@ -83,13 +83,57 @@ func (tp *TemplateProvider) Apply(tokens map[string]string) error {
 		return fmt.Errorf("failed to create target directory: %w", err)
 	}
 
-	if err := os.WriteFile(resolvedTarget, buf.Bytes(), 0644); err != nil {
-		return fmt.Errorf("failed to write target file %s: %w", resolvedTarget, err)
+	fileName := filepath.Base(resolvedTarget)
+	isShellConfig := fileName == ".bashrc" || fileName == ".zshrc" || fileName == ".profile" || fileName == ".bash_profile"
+
+	if isShellConfig {
+		// Append or update the block in shell config
+		existingContent, err := os.ReadFile(resolvedTarget)
+		var newFullContent []byte
+		markerStart := fmt.Sprintf("# >>> dropdx: %s start >>>", tp.name)
+		markerEnd := fmt.Sprintf("# <<< dropdx: %s end <<<", tp.name)
+		newBlock := fmt.Sprintf("\n%s\n%s\n%s\n", markerStart, strings.TrimSpace(buf.String()), markerEnd)
+
+		action := "Applied"
+		if err == nil {
+			// File exists, try to replace existing block
+			contentStr := string(existingContent)
+			startIdx := strings.Index(contentStr, markerStart)
+			endIdx := strings.Index(contentStr, markerEnd)
+
+			if startIdx != -1 && endIdx != -1 && endIdx > startIdx {
+				// Replace existing block
+				action = "Updated"
+				newFullContent = []byte(contentStr[:startIdx] + strings.TrimPrefix(newBlock, "\n") + contentStr[endIdx+len(markerEnd):])
+			} else {
+				// Append to end
+				action = "Appended to"
+				newFullContent = append(existingContent, []byte(newBlock)...)
+			}
+		} else {
+			// File doesn't exist, create new
+			newFullContent = []byte(newBlock)
+		}
+
+		if err := os.WriteFile(resolvedTarget, newFullContent, 0644); err != nil {
+			return fmt.Errorf("failed to write shell config %s: %w", resolvedTarget, err)
+		}
+
+		fmt.Printf("%s %s %s -> %s\n", 
+			color.GreenString("✔"), 
+			color.YellowString(action),
+			color.MagentaString(tp.name), 
+			color.CyanString(resolvedTarget))
+	} else {
+		// Overwrite for other files (default behavior)
+		if err := os.WriteFile(resolvedTarget, buf.Bytes(), 0644); err != nil {
+			return fmt.Errorf("failed to write target file %s: %w", resolvedTarget, err)
+		}
+		fmt.Printf("%s Applied %s -> %s\n", 
+			color.GreenString("✔"), 
+			color.MagentaString(tp.name), 
+			color.CyanString(resolvedTarget))
 	}
 
-	fmt.Printf("%s Applied %s -> %s\n", 
-		color.GreenString("✔"), 
-		color.MagentaString(tp.name), 
-		color.CyanString(resolvedTarget))
 	return nil
 }
