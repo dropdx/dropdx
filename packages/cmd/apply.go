@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
 	"syscall"
 	"time"
@@ -36,6 +38,31 @@ if none is specified. It replaces tokens in templates with actual values.`,
 
 		engine := core.NewEngine(cfg)
 
+		// 1. Ensure 'github' is in the engine if missing from config
+		if _, ok := cfg.Providers["github"]; !ok {
+			if cfg.Providers == nil {
+				cfg.Providers = make(map[string]config.Provider)
+			}
+			cfg.Providers["github"] = config.Provider{
+				Template: "templates/github.tmpl",
+				Target:   "~/.bashrc",
+			}
+			// Re-create engine to include the dynamic github provider
+			engine = core.NewEngine(cfg)
+		}
+
+		// 2. Ensure github template exists in the background
+		home := os.Getenv("DROPDX_HOME")
+		if home == "" {
+			uh, _ := os.UserHomeDir()
+			home = filepath.Join(uh, ".dropdx")
+		}
+		tmplPath := filepath.Join(home, "templates", "github.tmpl")
+		if _, err := os.Stat(tmplPath); os.IsNotExist(err) {
+			_ = os.MkdirAll(filepath.Dir(tmplPath), 0755)
+			_ = os.WriteFile(tmplPath, []byte(`export GITHUB_TOKEN="{{.github}}"`), 0644)
+		}
+
 		var providerName string
 		if len(args) > 0 {
 			providerName = args[0]
@@ -60,6 +87,7 @@ if none is specified. It replaces tokens in templates with actual values.`,
 			// Force 'github' into options if not seen
 			if !seen["github"] {
 				options = append(options, "github")
+				seen["github"] = true
 			}
 			
 			if len(options) > 1 {
@@ -78,20 +106,7 @@ if none is specified. It replaces tokens in templates with actual values.`,
 		}
 
 		if providerName != "" {
-			// 1. If provider is github and not in config, add a default one
-			if _, ok := cfg.Providers[providerName]; !ok && providerName == "github" {
-				if cfg.Providers == nil {
-					cfg.Providers = make(map[string]config.Provider)
-				}
-				cfg.Providers["github"] = config.Provider{
-					Template: "templates/github.tmpl",
-					Target:   "~/.bashrc",
-				}
-				// Re-create engine with updated config
-				engine = core.NewEngine(cfg)
-			}
-
-			// 2. Check if we have a token for this provider (specifically for github if missing)
+			// Check if we have a token for this provider (specifically for github if missing)
 			token, hasToken := cfg.Tokens[providerName]
 			if (!hasToken || token.Value == "") && providerName == "github" {
 				pterm.Warning.Printf("GitHub token is missing. Please enter it now to apply.\n")
