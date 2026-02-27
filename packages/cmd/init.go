@@ -102,6 +102,43 @@ providers:
 		fmt.Printf("%s config.yaml already exists, skipping.\n", warn("ℹ"))
 	}
 
+	// 3.1 Create default .gitignore
+	gitignorePath := filepath.Join(home, ".gitignore")
+	if _, err := os.Stat(gitignorePath); os.IsNotExist(err) {
+		gitignoreContent := []byte(`# dropdx gitignore
+# Windows Zone identifiers
+*:Zone.Identifier
+*:zone.identifier
+*:Zone.identifier
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows system files
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux system files
+*~
+~$*
+
+# temporary files
+*.tmp
+*.swp
+
+# Editor backups
+*.bak
+*.backup
+`)
+		if err := os.WriteFile(gitignorePath, gitignoreContent, 0644); err != nil {
+			return fmt.Errorf("%s failed to create .gitignore file: %w", errCrit("✖"), err)
+		}
+		fmt.Printf("%s Default .gitignore file created.\n", success("✔"))
+	}
+
 	// 4. Create default templates
 	createTemplate(filepath.Join(templatesDir, "github.tmpl"), `export GITHUB_TOKEN="{{.github}}"`)
 	createTemplate(filepath.Join(templatesDir, ".pypirc.tmpl"), `[distutils]
