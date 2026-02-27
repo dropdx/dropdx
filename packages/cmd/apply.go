@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"sort"
 	"syscall"
 	"time"
 
@@ -55,8 +56,14 @@ if none is specified. It replaces tokens in templates with actual values.`,
 					seen[k] = true
 				}
 			}
+
+			// Force 'github' into options if not seen
+			if !seen["github"] {
+				options = append(options, "github")
+			}
 			
 			if len(options) > 1 {
+				sort.Strings(options[1:]) // Sort everything except "All Providers"
 				selected, _ := pterm.DefaultInteractiveSelect.
 					WithDefaultText("Select a provider to apply").
 					WithOptions(options).
@@ -71,7 +78,20 @@ if none is specified. It replaces tokens in templates with actual values.`,
 		}
 
 		if providerName != "" {
-			// Check if we have a token for this provider (specifically for github if missing)
+			// 1. If provider is github and not in config, add a default one
+			if _, ok := cfg.Providers[providerName]; !ok && providerName == "github" {
+				if cfg.Providers == nil {
+					cfg.Providers = make(map[string]config.Provider)
+				}
+				cfg.Providers["github"] = config.Provider{
+					Template: "templates/github.tmpl",
+					Target:   "~/.bashrc",
+				}
+				// Re-create engine with updated config
+				engine = core.NewEngine(cfg)
+			}
+
+			// 2. Check if we have a token for this provider (specifically for github if missing)
 			token, hasToken := cfg.Tokens[providerName]
 			if (!hasToken || token.Value == "") && providerName == "github" {
 				pterm.Warning.Printf("GitHub token is missing. Please enter it now to apply.\n")
