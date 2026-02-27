@@ -1,6 +1,6 @@
 name: dpdx
 base: core24
-version: '0.3.1'
+version: '0.3.2'
 summary: dropdx CLI
 description: |
   dropdx is a tool for managing project secrets and PATs.

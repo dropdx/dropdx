@@ -22,6 +22,7 @@
   "hooks": {
     "after:bump": [
       "sed -i \"s/var Version = \\\".*\\\"/var Version = \\\"v${version}\\\"/\" packages/cmd/version.go",
+      "sed -i \"s/version: '.*'/version: '${version}'/\" snap/snapcraft.yaml",
       "pnpm recursive exec -- pnpm version ${version} --allow-same-version --no-git-tag-version"
     ]
   }
