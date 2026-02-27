@@ -93,7 +93,7 @@ if none is specified. It replaces tokens in templates with actual values.`,
 			if len(options) > 1 {
 				sort.Strings(options[1:]) // Sort everything except "All Providers"
 				selected, _ := pterm.DefaultInteractiveSelect.
-					WithDefaultText("Select a provider to apply").
+					WithDefaultText("Select a provider to apply (v2)").
 					WithOptions(options).
 					Show()
 				
