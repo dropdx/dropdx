@@ -29,12 +29,23 @@ type Machine struct {
 }
 
 /**
+ * Remote defines an SSH server configuration.
+ */
+type Remote struct {
+	Alias string `yaml:"alias" mapstructure:"alias"`
+	Host  string `yaml:"host" mapstructure:"host"`
+	Port  int    `yaml:"port" mapstructure:"port"`
+	User  string `yaml:"user" mapstructure:"user"`
+}
+
+/**
  * Config represents the main structure of the config.yaml file.
  */
 type Config struct {
 	Tokens    map[string]TokenInfo `mapstructure:"tokens"`
 	Providers map[string]Provider  `mapstructure:"providers"`
 	Machines  map[string]Machine   `yaml:"machines,omitempty" mapstructure:"machines"`
+	Remotes   map[string]Remote    `yaml:"remotes,omitempty" mapstructure:"remotes"`
 }
 
 /**
