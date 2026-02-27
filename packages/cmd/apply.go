@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"syscall"
 	"time"
 
@@ -110,7 +111,6 @@ if none is specified. It replaces tokens in templates with actual values.`,
 			token, hasToken := cfg.Tokens[providerName]
 			if (!hasToken || token.Value == "") && providerName == "github" {
 				pterm.Warning.Printf("GitHub token is missing. Please enter it now to apply.\n")
-				// Call the set-token logic for github (inline for now)
 				pterm.Print(info("?"), " Enter token for ", info("github"), ": ")
 				byteToken, _ := term.ReadPassword(int(syscall.Stdin))
 				pterm.Println()
@@ -132,7 +132,11 @@ if none is specified. It replaces tokens in templates with actual values.`,
 			}
 
 			// Apply specific provider
-			return engine.ApplyProvider(providerName)
+			err := engine.ApplyProvider(providerName)
+			if err == nil {
+				showSuccessAndAdvice()
+			}
+			return err
 		}
 
 		// Apply all with spinner
@@ -145,11 +149,26 @@ if none is specified. It replaces tokens in templates with actual values.`,
 		s.Stop()
 		
 		if err == nil {
-			fmt.Printf("\n%s All configurations applied successfully.\n", success("✨"))
+			showSuccessAndAdvice()
 		}
 		
 		return err
 	},
+}
+
+func showSuccessAndAdvice() {
+	fmt.Printf("\n%s Configurations applied successfully.\n", success("✨"))
+
+	// Suggest sourcing the RC file
+	shell := os.Getenv("SHELL")
+	rcFile := ".bashrc"
+	if strings.Contains(shell, "zsh") {
+		rcFile = ".zshrc"
+	}
+	fmt.Println()
+	pterm.Warning.Prefix.Text = "ADVICE"
+	pterm.Warning.Printf("To apply changes to your current shell session, run:\n")
+	pterm.Info.Printf("  source ~/%s\n", rcFile)
 }
 
 func init() {
