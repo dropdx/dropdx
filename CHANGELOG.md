@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/dropdx/dropdx/compare/v0.3.1...v0.3.2) (2026-02-27)
+
+### Bug Fixes
+
+* ensure binary is executable and add snapcraft config ([cadc5d8](https://github.com/dropdx/dropdx/commit/cadc5d8d3b9802af2e014daf0d8a492ddb3e2926))
+* ensure binary is executable before spawning in apps/cli ([4ff87ab](https://github.com/dropdx/dropdx/commit/4ff87ab05654fb9c872008a0e6296b67a9211126))
+
 ## [0.3.1](https://github.com/dropdx/dropdx/compare/v0.3.0...v0.3.1) (2026-02-27)
 
 ## [0.3.0](https://github.com/dropdx/dropdx/compare/v0.2.1...v0.3.0) (2026-02-26)
