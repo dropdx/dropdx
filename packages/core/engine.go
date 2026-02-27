@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/dropdx/dropdx/packages/config"
 	"github.com/dropdx/dropdx/packages/provider"
@@ -66,31 +67,50 @@ func (e *Engine) ApplyAll() error {
 func (e *Engine) getTemplateTokens() map[string]string {
 	tokens := make(map[string]string)
 	for k, v := range e.Config.Tokens {
-		if v.Value != "" {
-			tokens[k] = v.Value
-		}
+		val := v.Value
 		
-		// If the main value is empty but we have registries, 
-		// use the first one as the default for the provider name key
-		if v.Value == "" && len(v.Registries) > 0 {
-			// Try to find npmjs first for npm provider
+		// If main value is empty, try to find a default from registries
+		if val == "" && len(v.Registries) > 0 {
+			// 1. Try common npm registry specifically for npm provider
 			if k == "npm" {
-				if reg, ok := v.Registries["https://registry.npmjs.org/"]; ok {
-					tokens[k] = reg.Value
+				for reg, regInfo := range v.Registries {
+					if strings.Contains(reg, "npmjs.org") && regInfo.Value != "" {
+						val = regInfo.Value
+						break
+					}
 				}
 			}
-			// If still empty, take the first available
-			if tokens[k] == "" {
+			// 2. Fallback: take the first non-empty value from any registry
+			if val == "" {
 				for _, regInfo := range v.Registries {
-					tokens[k] = regInfo.Value
-					break
+					if regInfo.Value != "" {
+						val = regInfo.Value
+						break
+					}
 				}
 			}
 		}
 
-		// Also add registries to the map so they can be accessed via URL
+		if val != "" {
+			tokens[k] = val
+			// Also add a suffixed version just in case (e.g. npm_token)
+			tokens[k+"_token"] = val
+		}
+
+		// Also add all registries as keys
 		for reg, regInfo := range v.Registries {
+			if regInfo.Value == "" {
+				continue
+			}
+			// Full URL key
 			tokens[reg] = regInfo.Value
+			
+			// Simplified key (e.g. registry.npmjs.org)
+			simpleReg := reg
+			simpleReg = strings.TrimPrefix(simpleReg, "https://")
+			simpleReg = strings.TrimPrefix(simpleReg, "http://")
+			simpleReg = strings.TrimSuffix(simpleReg, "/")
+			tokens[simpleReg] = regInfo.Value
 		}
 	}
 	return tokens
