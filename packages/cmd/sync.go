@@ -21,6 +21,11 @@ var syncCmd = &cobra.Command{
 	Long: `Performs git pull and git push on the dropdx home directory 
 to synchronize templates and tokens across different machines.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// If a subcommand is called, don't run the default sync
+		if cmd.HasAvailableSubCommands() && len(args) > 0 {
+			return nil
+		}
+
 		confirmed, _ := pterm.DefaultInteractiveConfirm.
 			WithDefaultText("Do you want to sync your configurations with git?").
 			Show()
