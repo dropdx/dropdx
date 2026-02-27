@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import { spawn } from 'node:child_process';
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import fs from 'node:fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,8 +39,18 @@ if (fs.existsSync(rootBinary)) {
 }
 
 if (!binaryPath || !fs.existsSync(binaryPath)) {
-  console.error(`Unsupported platform/architecture or binary not found: ${platform}/${arch}`);
+  console.error(
+    `Unsupported platform/architecture or binary not found: ${platform}/${arch}`
+  );
   process.exit(1);
+}
+
+// Ensure the binary is executable
+try {
+  fs.chmodSync(binaryPath, 0o755);
+} catch {
+  // Ignore error if we don't have permission to chmod (it might be read-only filesystem)
+  // but if it's already executable it will work anyway.
 }
 
 const args = process.argv.slice(2);
