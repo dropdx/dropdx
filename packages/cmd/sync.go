@@ -12,49 +12,73 @@ import (
 	"github.com/spf13/cobra"
 )
 
-/**
- * syncCmd represents the sync command.
- */
 var syncCmd = &cobra.Command{
 	Use:   "sync",
-	Short: "Sync configurations using Git",
-	Long: `Performs git pull and git push on the dropdx home directory 
-to synchronize templates and tokens across different machines.`,
+	Short: "Sync configurations",
+	Long:  "Synchronize local files with the dropdx vault or perform git operations on the vault repository.",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// If a subcommand is called, don't run the default sync
-		if cmd.HasAvailableSubCommands() && len(args) > 0 {
+		// If a subcommand is called, don't do anything (handled by subcommands)
+		if len(args) > 0 {
 			return nil
 		}
 
-		confirmed, _ := pterm.DefaultInteractiveConfirm.
-			WithDefaultText("Do you want to sync your configurations with git?").
+		// Interactive selection
+		options := []string{
+			"Sync Git Repository (Vault)",
+			"Sync SSH Configuration",
+			"Sync SSH Keys",
+		}
+
+		selected, _ := pterm.DefaultInteractiveSelect.
+			WithDefaultText("What do you want to sync?").
+			WithOptions(options).
 			Show()
-		
+
+		switch selected {
+		case "Sync Git Repository (Vault)":
+			return syncRepositoryCmd.RunE(syncRepositoryCmd, nil)
+		case "Sync SSH Configuration":
+			return syncSSHConfigCmd.RunE(syncSSHConfigCmd, nil)
+		case "Sync SSH Keys":
+			return syncSSHKeysCmd.RunE(syncSSHKeysCmd, nil)
+		}
+
+		return nil
+	},
+}
+
+/**
+ * syncRepositoryCmd represents the repository sync subcommand.
+ */
+var syncRepositoryCmd = &cobra.Command{
+	Use:   "repository",
+	Short: "Sync the dropdx vault repository using Git",
+	Long: `Performs git pull and git push on the dropdx home directory 
+to synchronize templates and tokens across different machines.`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		confirmed, _ := pterm.DefaultInteractiveConfirm.
+			WithDefaultText("Do you want to sync your vault repository with git?").
+			Show()
+
 		if !confirmed {
 			fmt.Println("Sync cancelled.")
 			return nil
 		}
-		
+
 		return runSync()
 	},
 }
 
 func init() {
+	syncCmd.AddCommand(syncRepositoryCmd)
 	rootCmd.AddCommand(syncCmd)
 }
 
 /**
- * runSync executes the synchronization logic using git.
+ * runSync executes the synchronization logic using git with autostash.
  */
 func runSync() error {
-	home := os.Getenv("DROPDX_HOME")
-	if home == "" {
-		userHome, err := os.UserHomeDir()
-		if err != nil {
-			return fmt.Errorf("failed to get user home directory: %w", err)
-		}
-		home = filepath.Join(userHome, ".dropdx")
-	}
+	home := getDropdxHome()
 
 	// 1. Check if .git exists
 	gitDir := filepath.Join(home, ".git")
@@ -66,12 +90,12 @@ func runSync() error {
 	}
 
 	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
-	s.Suffix = " Pulling changes..."
+	s.Suffix = " Pulling changes (with autostash)..."
 	s.Color("cyan")
 	s.Start()
 
-	// 2. Perform git pull
-	if err := executeGit(home, "pull", "--rebase"); err != nil {
+	// 2. Perform git pull with autostash
+	if err := executeGit(home, "pull", "--rebase", "--autostash"); err != nil {
 		s.Stop()
 		return fmt.Errorf("failed to pull: %w", err)
 	}
@@ -89,7 +113,7 @@ func runSync() error {
 	s.Stop()
 	fmt.Printf("%s Pushed changes successfully.\n", success("✔"))
 
-	fmt.Printf("\n%s Sync completed successfully.\n", success("✨"))
+	fmt.Printf("\n%s Repository sync completed successfully.\n", success("✨"))
 	return nil
 }
 
