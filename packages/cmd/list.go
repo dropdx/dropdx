@@ -64,7 +64,20 @@ var listCmd = &cobra.Command{
 			}
 		}
 
-		// 3. Interactive Selection
+		// 3. List Machines
+		fmt.Println()
+		fmt.Println(header("--- Machines ---"))
+		if len(cfg.Machines) == 0 {
+			fmt.Println("  No machines defined.")
+		} else {
+			for name, machine := range cfg.Machines {
+				fmt.Printf("  %s %s\n",
+					tokenStyle(name+":"),
+					info(machine.OS))
+			}
+		}
+
+		// 4. Interactive Selection
 		if len(cfg.Tokens) > 0 {
 			var tokenNames []string
 			for k := range cfg.Tokens {

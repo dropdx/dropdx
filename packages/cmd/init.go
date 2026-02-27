@@ -61,6 +61,13 @@ func runInit() error {
 	}
 	fmt.Printf("%s Templates directory created.\n", success("✔"))
 
+	// 2.1 Create machines directory
+	machinesDir := filepath.Join(home, "machines")
+	if err := os.MkdirAll(machinesDir, 0755); err != nil {
+		return fmt.Errorf("%s failed to create machines directory: %w", errCrit("✖"), err)
+	}
+	fmt.Printf("%s Machines directory created.\n", success("✔"))
+
 	// 3. Create default config.yaml
 	configPath := filepath.Join(home, "config.yaml")
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {

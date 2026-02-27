@@ -21,11 +21,20 @@ type TokenInfo struct {
 }
 
 /**
+ * Machine defines the properties of a synchronized machine.
+ */
+type Machine struct {
+	Name string `yaml:"name" mapstructure:"name"`
+	OS   string `yaml:"os" mapstructure:"os"`
+}
+
+/**
  * Config represents the main structure of the config.yaml file.
  */
 type Config struct {
 	Tokens    map[string]TokenInfo `mapstructure:"tokens"`
 	Providers map[string]Provider  `mapstructure:"providers"`
+	Machines  map[string]Machine   `yaml:"machines,omitempty" mapstructure:"machines"`
 }
 
 /**
