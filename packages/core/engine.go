@@ -69,6 +69,26 @@ func (e *Engine) getTemplateTokens() map[string]string {
 		if v.Value != "" {
 			tokens[k] = v.Value
 		}
+		
+		// If the main value is empty but we have registries, 
+		// use the first one as the default for the provider name key
+		if v.Value == "" && len(v.Registries) > 0 {
+			// Try to find npmjs first for npm provider
+			if k == "npm" {
+				if reg, ok := v.Registries["https://registry.npmjs.org/"]; ok {
+					tokens[k] = reg.Value
+				}
+			}
+			// If still empty, take the first available
+			if tokens[k] == "" {
+				for _, regInfo := range v.Registries {
+					tokens[k] = regInfo.Value
+					break
+				}
+			}
+		}
+
+		// Also add registries to the map so they can be accessed via URL
 		for reg, regInfo := range v.Registries {
 			tokens[reg] = regInfo.Value
 		}
