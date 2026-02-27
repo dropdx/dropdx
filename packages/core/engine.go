@@ -42,13 +42,7 @@ func (e *Engine) ApplyProvider(name string) error {
 		return fmt.Errorf("provider %s not found in configuration", name)
 	}
 
-	// Extract only values for the template engine
-	tokenValues := make(map[string]string)
-	for k, v := range e.Config.Tokens {
-		tokenValues[k] = v.Value
-	}
-
-	return p.Apply(tokenValues)
+	return p.Apply(e.getTemplateTokens())
 }
 
 /**
@@ -60,10 +54,24 @@ func (e *Engine) ApplyAll() error {
 		return nil
 	}
 
+	tokens := e.getTemplateTokens()
 	for name := range e.providers {
-		if err := e.ApplyProvider(name); err != nil {
+		if err := e.providers[name].Apply(tokens); err != nil {
 			return fmt.Errorf("failed to apply provider %s: %w", name, err)
 		}
 	}
 	return nil
+}
+
+func (e *Engine) getTemplateTokens() map[string]string {
+	tokens := make(map[string]string)
+	for k, v := range e.Config.Tokens {
+		if v.Value != "" {
+			tokens[k] = v.Value
+		}
+		for reg, regInfo := range v.Registries {
+			tokens[reg] = regInfo.Value
+		}
+	}
+	return tokens
 }

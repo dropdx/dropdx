@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"syscall"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -9,6 +10,7 @@ import (
 	"github.com/dropdx/dropdx/packages/core"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
 )
 
 /**
@@ -40,8 +42,18 @@ if none is specified. It replaces tokens in templates with actual values.`,
 			// Interactive provider selection
 			var options []string
 			options = append(options, "All Providers")
+			
+			// Use a map to avoid duplicates
+			seen := make(map[string]bool)
 			for k := range cfg.Providers {
 				options = append(options, k)
+				seen[k] = true
+			}
+			for k := range cfg.Tokens {
+				if !seen[k] {
+					options = append(options, k)
+					seen[k] = true
+				}
 			}
 			
 			if len(options) > 1 {
@@ -59,6 +71,31 @@ if none is specified. It replaces tokens in templates with actual values.`,
 		}
 
 		if providerName != "" {
+			// Check if we have a token for this provider (specifically for github if missing)
+			token, hasToken := cfg.Tokens[providerName]
+			if (!hasToken || token.Value == "") && providerName == "github" {
+				pterm.Warning.Printf("GitHub token is missing. Please enter it now to apply.\n")
+				// Call the set-token logic for github (inline for now)
+				pterm.Print(info("?"), " Enter token for ", info("github"), ": ")
+				byteToken, _ := term.ReadPassword(int(syscall.Stdin))
+				pterm.Println()
+				tokenValue := string(byteToken)
+				
+				if tokenValue != "" {
+					if cfg.Tokens == nil {
+						cfg.Tokens = make(map[string]config.TokenInfo)
+					}
+					cfg.Tokens["github"] = config.TokenInfo{
+						Value: tokenValue,
+					}
+					// Save updated config
+					_ = config.Save(cfg)
+					pterm.Success.Println("GitHub token saved.")
+				} else {
+					return fmt.Errorf("github token cannot be empty")
+				}
+			}
+
 			// Apply specific provider
 			return engine.ApplyProvider(providerName)
 		}
