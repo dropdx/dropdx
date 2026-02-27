@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -17,6 +18,15 @@ var initCmd = &cobra.Command{
 	Long: `Creates the base directory (default: ~/.dropdx), 
 the templates directory, and default config files.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		confirmed, _ := pterm.DefaultInteractiveConfirm.
+			WithDefaultText("Do you want to initialize dropdx configuration?").
+			Show()
+		
+		if !confirmed {
+			fmt.Println("Initialization cancelled.")
+			return nil
+		}
+		
 		return runInit()
 	},
 }

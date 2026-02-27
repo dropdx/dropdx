@@ -32,9 +32,33 @@ if none is specified. It replaces tokens in templates with actual values.`,
 
 		engine := core.NewEngine(cfg)
 
+		var providerName string
 		if len(args) > 0 {
+			providerName = args[0]
+		} else {
+			// Interactive provider selection
+			var options []string
+			options = append(options, "All Providers")
+			for k := range cfg.Providers {
+				options = append(options, k)
+			}
+			
+			if len(options) > 1 {
+				selected, _ := pterm.DefaultInteractiveSelect.
+					WithDefaultText("Select a provider to apply").
+					WithOptions(options).
+					Show()
+				
+				if selected == "All Providers" {
+					providerName = ""
+				} else {
+					providerName = selected
+				}
+			}
+		}
+
+		if providerName != "" {
 			// Apply specific provider
-			providerName := args[0]
 			return engine.ApplyProvider(providerName)
 		}
 

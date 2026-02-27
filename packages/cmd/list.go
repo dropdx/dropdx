@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/dropdx/dropdx/packages/config"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -37,7 +39,13 @@ var listCmd = &cobra.Command{
 				if info.ExpiresAt != "" {
 					expiryInfo = warn(fmt.Sprintf(" [Exp: %s]", info.ExpiresAt))
 				}
-				fmt.Printf("  %s %s%s\n", tokenStyle(name+":"), muted(obfuscated), expiryInfo)
+				
+				extra := ""
+				if len(info.Registries) > 0 {
+					extra = info(fmt.Sprintf(" (%d registries)", len(info.Registries)))
+				}
+
+				fmt.Printf("  %s %s%s%s\n", tokenStyle(name+":"), muted(obfuscated), expiryInfo, extra)
 			}
 		}
 
@@ -53,6 +61,55 @@ var listCmd = &cobra.Command{
 					info(p.Template),
 					info("→"),
 					info(p.Target))
+			}
+		}
+
+		// 3. Interactive Selection
+		if len(cfg.Tokens) > 0 {
+			var tokenNames []string
+			for k := range cfg.Tokens {
+				tokenNames = append(tokenNames, k)
+			}
+			sort.Strings(tokenNames)
+			tokenNames = append(tokenNames, "Quit")
+
+			for {
+				selected, _ := pterm.DefaultInteractiveSelect.
+					WithDefaultText("Select a token to see details").
+					WithOptions(tokenNames).
+					Show()
+
+				if selected == "Quit" {
+					break
+				}
+
+				info := cfg.Tokens[selected]
+				fmt.Println()
+				fmt.Printf("%s details:\n", tokenStyle(selected))
+				if info.Value != "" {
+					fmt.Printf("  Value: %s\n", info.Value)
+				}
+				if info.Name != "" {
+					fmt.Printf("  Name: %s\n", info.Name)
+				}
+				if info.ExpiresAt != "" {
+					fmt.Printf("  Expires: %s\n", info.ExpiresAt)
+				}
+
+				if len(info.Registries) > 0 {
+					fmt.Println("  Registries:")
+					for reg, regInfo := range info.Registries {
+						fmt.Printf("    - %s:\n", info(reg))
+						fmt.Printf("      Value: %s\n", regInfo.Value)
+						if regInfo.Name != "" {
+							fmt.Printf("      Name: %s\n", regInfo.Name)
+						}
+						if regInfo.ExpiresAt != "" {
+							fmt.Printf("      Expires: %s\n", regInfo.ExpiresAt)
+						}
+					}
+				}
+				fmt.Println()
 			}
 		}
 

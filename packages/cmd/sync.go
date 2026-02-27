@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/briandowns/spinner"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -20,6 +21,15 @@ var syncCmd = &cobra.Command{
 	Long: `Performs git pull and git push on the dropdx home directory 
 to synchronize templates and tokens across different machines.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		confirmed, _ := pterm.DefaultInteractiveConfirm.
+			WithDefaultText("Do you want to sync your configurations with git?").
+			Show()
+		
+		if !confirmed {
+			fmt.Println("Sync cancelled.")
+			return nil
+		}
+		
 		return runSync()
 	},
 }
