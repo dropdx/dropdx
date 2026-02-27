@@ -69,9 +69,17 @@ func (e *Engine) getTemplateTokens() map[string]string {
 	for k, v := range e.Config.Tokens {
 		val := v.Value
 		
-		// If main value is empty, try to find a default from registries
-		if val == "" && len(v.Registries) > 0 {
-			// 1. Try common npm registry specifically for npm provider
+		// Collect all possible registry values
+		var registryValues []string
+		for _, regInfo := range v.Registries {
+			if regInfo.Value != "" {
+				registryValues = append(registryValues, regInfo.Value)
+			}
+		}
+
+		// If main value is empty, use the first available registry value
+		if val == "" && len(registryValues) > 0 {
+			// Specific logic for npm to prefer npmjs.org
 			if k == "npm" {
 				for reg, regInfo := range v.Registries {
 					if strings.Contains(reg, "npmjs.org") && regInfo.Value != "" {
@@ -80,37 +88,34 @@ func (e *Engine) getTemplateTokens() map[string]string {
 					}
 				}
 			}
-			// 2. Fallback: take the first non-empty value from any registry
+			// If still empty, just take the first one
 			if val == "" {
-				for _, regInfo := range v.Registries {
-					if regInfo.Value != "" {
-						val = regInfo.Value
-						break
-					}
-				}
+				val = registryValues[0]
 			}
 		}
 
 		if val != "" {
 			tokens[k] = val
-			// Also add a suffixed version just in case (e.g. npm_token)
 			tokens[k+"_token"] = val
 		}
 
-		// Also add all registries as keys
+		// Add all registries as keys
 		for reg, regInfo := range v.Registries {
 			if regInfo.Value == "" {
 				continue
 			}
-			// Full URL key
 			tokens[reg] = regInfo.Value
 			
-			// Simplified key (e.g. registry.npmjs.org)
-			simpleReg := reg
-			simpleReg = strings.TrimPrefix(simpleReg, "https://")
-			simpleReg = strings.TrimPrefix(simpleReg, "http://")
-			simpleReg = strings.TrimSuffix(simpleReg, "/")
-			tokens[simpleReg] = regInfo.Value
+			// Clean key (e.g. registry.npmjs.org)
+			clean := reg
+			clean = strings.TrimPrefix(clean, "https://")
+			clean = strings.TrimPrefix(clean, "http://")
+			clean = strings.TrimSuffix(clean, "/")
+			tokens[clean] = regInfo.Value
+			
+			// Underscore version (e.g. registry_npmjs_org)
+			underscore := strings.ReplaceAll(strings.ReplaceAll(clean, ".", "_"), ":", "_")
+			tokens[underscore] = regInfo.Value
 		}
 	}
 	return tokens
