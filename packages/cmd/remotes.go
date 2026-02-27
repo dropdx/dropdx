@@ -18,8 +18,9 @@ var updateCmd = &cobra.Command{
 }
 
 var createSSHConfigCmd = &cobra.Command{
-	Use:   "ssh-config",
-	Short: "Create a new SSH configuration entry",
+	Use:     "remote",
+	Aliases: []string{"ssh-config"},
+	Short:   "Create a new remote server configuration",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := config.Load()
 		if err != nil {
