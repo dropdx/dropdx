@@ -7,6 +7,7 @@ import (
 	"github.com/briandowns/spinner"
 	"github.com/dropdx/dropdx/packages/config"
 	"github.com/dropdx/dropdx/packages/core"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 

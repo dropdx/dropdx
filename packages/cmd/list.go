@@ -33,16 +33,16 @@ var listCmd = &cobra.Command{
 		if len(cfg.Tokens) == 0 {
 			fmt.Println("  No tokens defined.")
 		} else {
-			for name, info := range cfg.Tokens {
-				obfuscated := obfuscate(info.Value)
+			for name, tInfo := range cfg.Tokens {
+				obfuscated := obfuscate(tInfo.Value)
 				expiryInfo := ""
-				if info.ExpiresAt != "" {
-					expiryInfo = warn(fmt.Sprintf(" [Exp: %s]", info.ExpiresAt))
+				if tInfo.ExpiresAt != "" {
+					expiryInfo = warn(fmt.Sprintf(" [Exp: %s]", tInfo.ExpiresAt))
 				}
 				
 				extra := ""
-				if len(info.Registries) > 0 {
-					extra = info(fmt.Sprintf(" (%d registries)", len(info.Registries)))
+				if len(tInfo.Registries) > 0 {
+					extra = info(fmt.Sprintf(" (%d registries)", len(tInfo.Registries)))
 				}
 
 				fmt.Printf("  %s %s%s%s\n", tokenStyle(name+":"), muted(obfuscated), expiryInfo, extra)
@@ -83,22 +83,22 @@ var listCmd = &cobra.Command{
 					break
 				}
 
-				info := cfg.Tokens[selected]
+				tInfo := cfg.Tokens[selected]
 				fmt.Println()
 				fmt.Printf("%s details:\n", tokenStyle(selected))
-				if info.Value != "" {
-					fmt.Printf("  Value: %s\n", info.Value)
+				if tInfo.Value != "" {
+					fmt.Printf("  Value: %s\n", tInfo.Value)
 				}
-				if info.Name != "" {
-					fmt.Printf("  Name: %s\n", info.Name)
+				if tInfo.Name != "" {
+					fmt.Printf("  Name: %s\n", tInfo.Name)
 				}
-				if info.ExpiresAt != "" {
-					fmt.Printf("  Expires: %s\n", info.ExpiresAt)
+				if tInfo.ExpiresAt != "" {
+					fmt.Printf("  Expires: %s\n", tInfo.ExpiresAt)
 				}
 
-				if len(info.Registries) > 0 {
+				if len(tInfo.Registries) > 0 {
 					fmt.Println("  Registries:")
-					for reg, regInfo := range info.Registries {
+					for reg, regInfo := range tInfo.Registries {
 						fmt.Printf("    - %s:\n", info(reg))
 						fmt.Printf("      Value: %s\n", regInfo.Value)
 						if regInfo.Name != "" {
