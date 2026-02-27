@@ -37,10 +37,26 @@ type Provider struct {
 }
 
 /**
- * Load returns the unmarshaled configuration from Viper.
+ * Load returns the unmarshaled configuration.
+ * We prefer reading the file directly with yaml.v3 to avoid Viper's
+ * issues with dots in map keys (it interprets them as paths).
  */
 func Load() (*Config, error) {
 	var cfg Config
+	configPath := viper.ConfigFileUsed()
+	
+	if configPath != "" {
+		data, err := os.ReadFile(configPath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read config file: %w", err)
+		}
+		if err := yaml.Unmarshal(data, &cfg); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal yaml config: %w", err)
+		}
+		return &cfg, nil
+	}
+
+	// Fallback to viper if no file path is set
 	if err := viper.Unmarshal(&cfg); err != nil {
 		return nil, fmt.Errorf("unable to decode config into struct: %w", err)
 	}
