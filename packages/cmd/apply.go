@@ -71,20 +71,27 @@ if none is specified. It replaces tokens in templates with actual values.`,
 
 				// For github, we always add it even if token is missing (to support the interactive prompt)
 				if name == "github" || hasContent {
-					envVar := strings.ToUpper(name) + "_TOKEN"
+					tmplName := name
 					if name == "gh" {
-						envVar = "GH_TOKEN"
+						tmplName = "github"
 					}
-					
+
 					cfg.Providers[name] = config.Provider{
-						Template: "templates/" + name + ".tmpl",
+						Template: "templates/" + tmplName + ".tmpl",
 						Target:   "~/.bashrc",
 					}
 					
-					tmplPath := filepath.Join(home, "templates", name + ".tmpl")
+					tmplPath := filepath.Join(home, "templates", tmplName+".tmpl")
 					if _, err := os.Stat(tmplPath); os.IsNotExist(err) {
 						_ = os.MkdirAll(filepath.Dir(tmplPath), 0755)
-						_ = os.WriteFile(tmplPath, []byte(fmt.Sprintf(`export %s="{{.%s}}"`, envVar, name)), 0644)
+						var content string
+						if tmplName == "github" {
+							content = "export GITHUB_TOKEN=\"{{.github}}\"\nexport GH_TOKEN=\"{{.github}}\""
+						} else {
+							envVar := strings.ToUpper(name) + "_TOKEN"
+							content = fmt.Sprintf(`export %s="{{.%s}}"`, envVar, name)
+						}
+						_ = os.WriteFile(tmplPath, []byte(content), 0644)
 					}
 				}
 			}

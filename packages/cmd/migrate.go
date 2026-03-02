@@ -92,7 +92,37 @@ var migrateCmd = &cobra.Command{
 			}
 		}
 
-		// 2. Set the new version
+		// 2. Perform migrations on providers
+		if cfg.Providers != nil {
+			if _, hasGh := cfg.Providers["gh"]; hasGh {
+				pterm.Info.Println("Consolidating 'gh' provider into 'github'...")
+				delete(cfg.Providers, "gh")
+				cfg.Providers["github"] = config.Provider{
+					Template: "templates/github.tmpl",
+					Target:   "~/.bashrc",
+				}
+			}
+		}
+
+		// 3. Clean up templates
+		home := os.Getenv("DROPDX_HOME")
+		if home == "" {
+			uh, _ := os.UserHomeDir()
+			home = filepath.Join(uh, ".dropdx")
+		}
+		ghTmpl := filepath.Join(home, "templates", "gh.tmpl")
+		githubTmpl := filepath.Join(home, "templates", "github.tmpl")
+
+		if _, err := os.Stat(ghTmpl); err == nil {
+			pterm.Info.Println("Removing old gh.tmpl and updating github.tmpl...")
+			_ = os.Remove(ghTmpl)
+			// Always update github.tmpl to include both exports during migration
+			_ = os.MkdirAll(filepath.Dir(githubTmpl), 0755)
+			content := "export GITHUB_TOKEN=\"{{.github}}\"\nexport GH_TOKEN=\"{{.github}}\""
+			_ = os.WriteFile(githubTmpl, []byte(content), 0644)
+		}
+
+		// 4. Set the new version
 		cfg.Version = config.CurrentVersion
 
 		// 3. Save the updated configuration
