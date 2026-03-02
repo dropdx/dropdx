@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.0](https://github.com/dropdx/dropdx/compare/v0.5.0...v0.6.0) (2026-03-02)
+
+### Features
+
+* unify gh/github templates and improve migration ([fdfb0f5](https://github.com/dropdx/dropdx/commit/fdfb0f521c6d5981ff9d378ab46d65de6ea0d43c))
+
+### Bug Fixes
+
+* ensure apply command uses v2 list structure and fix config loading ([65cc8b4](https://github.com/dropdx/dropdx/commit/65cc8b467527a66b0eac0fbb4a116b13cb35168c))
+
 ## [0.5.0](https://github.com/dropdx/dropdx/compare/v0.4.0...v0.5.0) (2026-03-02)
 
 ### Features
