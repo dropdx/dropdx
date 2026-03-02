@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.2](https://github.com/dropdx/dropdx/compare/v0.6.1...v0.6.2) (2026-03-02)
+
+### Bug Fixes
+
+* add missing imports in migrate command ([21525b4](https://github.com/dropdx/dropdx/commit/21525b4adecba8d312a8f196dfae8907a260faab))
+
 ## [0.6.1](https://github.com/dropdx/dropdx/compare/v0.6.0...v0.6.1) (2026-03-02)
 
 ## [0.6.0](https://github.com/dropdx/dropdx/compare/v0.5.0...v0.6.0) (2026-03-02)
