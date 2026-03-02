@@ -131,7 +131,9 @@ if none is specified. It replaces tokens in templates with actual values.`,
 		if providerName != "" {
 			// Check if we have a token for this provider (specifically for github if missing)
 			token, hasToken := cfg.Tokens[providerName]
-			if (!hasToken || token.Value == "") && providerName == "github" {
+			hasValue := token.Value != "" || len(token.Items) > 0
+			
+			if (!hasToken || !hasValue) && providerName == "github" {
 				pterm.Warning.Printf("GitHub token is missing. Please enter it now to apply.\n")
 				pterm.Print(info("?"), " Enter token for ", info("github"), ": ")
 				byteToken, _ := term.ReadPassword(int(syscall.Stdin))
@@ -142,12 +144,18 @@ if none is specified. It replaces tokens in templates with actual values.`,
 					if cfg.Tokens == nil {
 						cfg.Tokens = make(map[string]config.TokenInfo)
 					}
+					// Maintain list structure for v2
 					cfg.Tokens["github"] = config.TokenInfo{
-						Value: tokenValue,
+						Items: []config.TokenInfo{
+							{Value: tokenValue, Name: "default"},
+						},
 					}
 					// Save updated config
 					_ = config.Save(cfg)
 					pterm.Success.Println("GitHub token saved.")
+					
+					// Re-create engine with new token
+					engine = core.NewEngine(cfg)
 				} else {
 					return fmt.Errorf("github token cannot be empty")
 				}

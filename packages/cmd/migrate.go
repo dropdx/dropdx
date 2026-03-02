@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var forceMigrate bool
+
 /**
  * migrateCmd represents the migrate command.
  */
@@ -21,8 +23,8 @@ var migrateCmd = &cobra.Command{
 			return fmt.Errorf("failed to load configuration: %w", err)
 		}
 
-		if cfg.Version == config.CurrentVersion {
-			pterm.Success.Printf("Configuration is already at the latest version: %s\n", config.CurrentVersion)
+		if cfg.Version == config.CurrentVersion && !forceMigrate {
+			pterm.Success.Printf("Configuration is already at the latest version: %s (use --force to re-run migration)\n", config.CurrentVersion)
 			return nil
 		}
 
@@ -104,5 +106,6 @@ var migrateCmd = &cobra.Command{
 }
 
 func init() {
+	migrateCmd.Flags().BoolVarP(&forceMigrate, "force", "f", false, "Force migration even if already at latest version")
 	rootCmd.AddCommand(migrateCmd)
 }

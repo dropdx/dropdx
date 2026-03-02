@@ -100,16 +100,15 @@ func Load() (*Config, error) {
 	
 	if configPath != "" {
 		data, err := os.ReadFile(configPath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read config file: %w", err)
+		if err == nil {
+			if err := yaml.Unmarshal(data, &cfg); err != nil {
+				return nil, fmt.Errorf("failed to unmarshal yaml config: %w", err)
+			}
+			return &cfg, nil
 		}
-		if err := yaml.Unmarshal(data, &cfg); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal yaml config: %w", err)
-		}
-		return &cfg, nil
 	}
 
-	// Fallback to viper if no file path is set
+	// Fallback to viper if direct read failed
 	if err := viper.Unmarshal(&cfg); err != nil {
 		return nil, fmt.Errorf("unable to decode config into struct: %w", err)
 	}
