@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.0](https://github.com/dropdx/dropdx/compare/v0.4.0...v0.5.0) (2026-03-02)
+
+### Features
+
+* implement config v2 with universal token lists and migration ([eae46af](https://github.com/dropdx/dropdx/commit/eae46afbcde18993d09dc327b5b7fb7a01dd2821))
+
 ## [0.4.0](https://github.com/dropdx/dropdx/compare/v0.3.3...v0.4.0) (2026-02-27)
 
 ### Features
