@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "private": true,
   "description": "dropdx is a cross-platform CLI to sync and update PATs and configurations.",
   "license": "MIT",
