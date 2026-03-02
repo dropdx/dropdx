@@ -43,7 +43,7 @@ var setTokenCmd = &cobra.Command{
 				providers = append(providers, k)
 			}
 			// Add common defaults if not present
-			commonDefaults := []string{"npm", "github", "gitlab", "pypi"}
+			commonDefaults := []string{"npm", "github", "gh", "gitlab", "pypi"}
 			for _, d := range commonDefaults {
 				found := false
 				for _, p := range providers {
@@ -153,23 +153,47 @@ var setTokenCmd = &cobra.Command{
 			cfg.Tokens = make(map[string]config.TokenInfo)
 		}
 
-		if provider == "npm" {
+		newToken := config.TokenInfo{
+			Value:     tokenValue,
+			Name:      tokenName,
+			ExpiresAt: expiryDate,
+		}
+
+		if provider == "npm" && registry != "" {
 			tokenInfo := cfg.Tokens["npm"]
+			// If npm is currently a single token or empty, we ensure it's structured
+			// In v2, we prefer it to be a list, but registries are a map inside TokenInfo.
+			// We'll keep registries as they are but ensure the container is handled correctly.
 			if tokenInfo.Registries == nil {
 				tokenInfo.Registries = make(map[string]config.TokenInfo)
 			}
-			tokenInfo.Registries[registry] = config.TokenInfo{
-				Value:     tokenValue,
-				Name:      tokenName,
-				ExpiresAt: expiryDate,
-			}
+			tokenInfo.Registries[registry] = newToken
 			cfg.Tokens["npm"] = tokenInfo
 		} else {
-			cfg.Tokens[provider] = config.TokenInfo{
-				Value:     tokenValue,
-				Name:      tokenName,
-				ExpiresAt: expiryDate,
+			// Universal list-based storage for all providers
+			tokenInfo := cfg.Tokens[provider]
+
+			if len(tokenInfo.Items) > 0 {
+				// Already a list, append
+				tokenInfo.Items = append(tokenInfo.Items, newToken)
+			} else if tokenInfo.Value != "" {
+				// Existing single token, convert to list and append new one
+				tokenInfo.Items = []config.TokenInfo{
+					{
+						Value:     tokenInfo.Value,
+						Name:      tokenInfo.Name,
+						ExpiresAt: tokenInfo.ExpiresAt,
+					},
+					newToken,
+				}
+				tokenInfo.Value = "" // Clear single value fields
+				tokenInfo.Name = ""
+				tokenInfo.ExpiresAt = ""
+			} else {
+				// New provider or empty, start a list
+				tokenInfo.Items = []config.TokenInfo{newToken}
 			}
+			cfg.Tokens[provider] = tokenInfo
 		}
 
 		// 8. Save config

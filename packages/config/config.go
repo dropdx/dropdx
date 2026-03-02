@@ -18,6 +18,36 @@ type TokenInfo struct {
 	Name       string               `yaml:"name,omitempty" mapstructure:"name"`
 	ExpiresAt  string               `yaml:"expires_at,omitempty" mapstructure:"expires_at"`
 	Registries map[string]TokenInfo `yaml:"registries,omitempty" mapstructure:"registries"`
+	Items      []TokenInfo          `yaml:"items,omitempty" mapstructure:"items"`
+}
+
+/**
+ * UnmarshalYAML implements custom unmarshaling for TokenInfo to support
+ * both a single object and a list of objects.
+ */
+func (t *TokenInfo) UnmarshalYAML(value *yaml.Node) error {
+	if value.Kind == yaml.SequenceNode {
+		return value.Decode(&t.Items)
+	}
+	type alias TokenInfo
+	var a alias
+	if err := value.Decode(&a); err != nil {
+		return err
+	}
+	*t = TokenInfo(a)
+	return nil
+}
+
+/**
+ * MarshalYAML implements custom marshaling for TokenInfo to support
+ * both a single object and a list of objects.
+ */
+func (t TokenInfo) MarshalYAML() (interface{}, error) {
+	if len(t.Items) > 0 {
+		return t.Items, nil
+	}
+	type alias TokenInfo
+	return alias(t), nil
 }
 
 /**
@@ -38,10 +68,13 @@ type Remote struct {
 	User  string `yaml:"user" mapstructure:"user"`
 }
 
+const CurrentVersion = "v2"
+
 /**
  * Config represents the main structure of the config.yaml file.
  */
 type Config struct {
+	Version   string               `yaml:"version" mapstructure:"version"`
 	Tokens    map[string]TokenInfo `mapstructure:"tokens"`
 	Providers map[string]Provider  `mapstructure:"providers"`
 	Machines  map[string]Machine   `yaml:"machines,omitempty" mapstructure:"machines"`

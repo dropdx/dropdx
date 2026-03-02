@@ -66,22 +66,53 @@ func (e *Engine) ApplyAll() error {
 
 func (e *Engine) getTemplateTokens() map[string]string {
 	tokens := make(map[string]string)
+	
+	// Create a temporary map to store results to handle aliases easily
+	type tokenSet struct {
+		val   string
+		items []config.TokenInfo
+		regs  map[string]config.TokenInfo
+	}
+	results := make(map[string]tokenSet)
+
 	for k, v := range e.Config.Tokens {
-		val := v.Value
+		ts := tokenSet{
+			val:   v.Value,
+			items: v.Items,
+			regs:  v.Registries,
+		}
+		
+		// Pick first item as default if main value is empty
+		if ts.val == "" && len(ts.items) > 0 {
+			ts.val = ts.items[0].Value
+		}
+		
+		results[k] = ts
+	}
+
+	// Handle 'gh' as alias for 'github' if missing
+	if _, hasGh := results["gh"]; !hasGh {
+		if gt, hasGithub := results["github"]; hasGithub {
+			results["gh"] = gt
+		}
+	}
+
+	for k, ts := range results {
+		val := ts.val
 		
 		// Collect all possible registry values
 		var registryValues []string
-		for _, regInfo := range v.Registries {
+		for _, regInfo := range ts.regs {
 			if regInfo.Value != "" {
 				registryValues = append(registryValues, regInfo.Value)
 			}
 		}
 
-		// If main value is empty, use the first available registry value
+		// If main value is still empty, use the first available registry value
 		if val == "" && len(registryValues) > 0 {
 			// Specific logic for npm to prefer npmjs.org
 			if k == "npm" {
-				for reg, regInfo := range v.Registries {
+				for reg, regInfo := range ts.regs {
 					if strings.Contains(reg, "npmjs.org") && regInfo.Value != "" {
 						val = regInfo.Value
 						break
@@ -99,8 +130,24 @@ func (e *Engine) getTemplateTokens() map[string]string {
 			tokens[k+"_token"] = val
 		}
 
+		// If it's a list, expose individual ones with names and indices
+		for i, item := range ts.items {
+			if item.Value == "" {
+				continue
+			}
+			
+			// By index: github_0, github_1
+			tokens[fmt.Sprintf("%s_%d", k, i)] = item.Value
+			
+			// By name: github_classic, github_fine_grained
+			if item.Name != "" {
+				cleanName := strings.ToLower(strings.ReplaceAll(item.Name, " ", "_"))
+				tokens[fmt.Sprintf("%s_%s", k, cleanName)] = item.Value
+			}
+		}
+
 		// Add all registries as keys
-		for reg, regInfo := range v.Registries {
+		for reg, regInfo := range ts.regs {
 			if regInfo.Value == "" {
 				continue
 			}

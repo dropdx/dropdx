@@ -37,32 +37,60 @@ if none is specified. It replaces tokens in templates with actual values.`,
 			return fmt.Errorf("no configuration found. Run 'dropdx init' first or check your config.yaml")
 		}
 
-		engine := core.NewEngine(cfg)
-
-		// 1. Ensure 'github' is in the engine if missing from config
-		if _, ok := cfg.Providers["github"]; !ok {
-			if cfg.Providers == nil {
-				cfg.Providers = make(map[string]config.Provider)
-			}
-			cfg.Providers["github"] = config.Provider{
-				Template: "templates/github.tmpl",
-				Target:   "~/.bashrc",
-			}
-			// Re-create engine to include the dynamic github provider
-			engine = core.NewEngine(cfg)
+		// 0. Check version and warn
+		if cfg.Version != config.CurrentVersion {
+			pterm.Warning.Printf("Your configuration version (%s) is outdated. Current version is %s.\n", cfg.Version, config.CurrentVersion)
+			pterm.Warning.Printf("Please run 'dropdx migrate' to update it.\n\n")
 		}
 
-		// 2. Ensure github template exists in the background
+		// 1. Ensure dynamic providers exist for tokens that don't have one
 		home := os.Getenv("DROPDX_HOME")
 		if home == "" {
 			uh, _ := os.UserHomeDir()
 			home = filepath.Join(uh, ".dropdx")
 		}
-		tmplPath := filepath.Join(home, "templates", "github.tmpl")
-		if _, err := os.Stat(tmplPath); os.IsNotExist(err) {
-			_ = os.MkdirAll(filepath.Dir(tmplPath), 0755)
-			_ = os.WriteFile(tmplPath, []byte(`export GITHUB_TOKEN="{{.github}}"`), 0644)
+
+		if cfg.Providers == nil {
+			cfg.Providers = make(map[string]config.Provider)
 		}
+
+		// List of tokens that should have a default provider if missing
+		tokensToAutoProvide := []string{"github", "gh", "gitlab", "pypi"}
+		
+		for _, name := range tokensToAutoProvide {
+			if _, ok := cfg.Providers[name]; !ok {
+				// Check if token exists (either as single value or list)
+				token, hasToken := cfg.Tokens[name]
+				hasContent := hasToken && (token.Value != "" || len(token.Items) > 0)
+				
+				// Special case: 'gh' can use 'github' tokens if it doesn't have its own
+				if name == "gh" && !hasContent {
+					gt, hgt := cfg.Tokens["github"]
+					hasContent = hgt && (gt.Value != "" || len(gt.Items) > 0)
+				}
+
+				// For github, we always add it even if token is missing (to support the interactive prompt)
+				if name == "github" || hasContent {
+					envVar := strings.ToUpper(name) + "_TOKEN"
+					if name == "gh" {
+						envVar = "GH_TOKEN"
+					}
+					
+					cfg.Providers[name] = config.Provider{
+						Template: "templates/" + name + ".tmpl",
+						Target:   "~/.bashrc",
+					}
+					
+					tmplPath := filepath.Join(home, "templates", name + ".tmpl")
+					if _, err := os.Stat(tmplPath); os.IsNotExist(err) {
+						_ = os.MkdirAll(filepath.Dir(tmplPath), 0755)
+						_ = os.WriteFile(tmplPath, []byte(fmt.Sprintf(`export %s="{{.%s}}"`, envVar, name)), 0644)
+					}
+				}
+			}
+		}
+
+		engine := core.NewEngine(cfg)
 
 		var providerName string
 		if len(args) > 0 {
@@ -83,12 +111,6 @@ if none is specified. It replaces tokens in templates with actual values.`,
 					options = append(options, k)
 					seen[k] = true
 				}
-			}
-
-			// Force 'github' into options if not seen
-			if !seen["github"] {
-				options = append(options, "github")
-				seen["github"] = true
 			}
 			
 			if len(options) > 1 {
