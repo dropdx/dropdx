@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/dropdx/dropdx/packages/config"
 	"github.com/pterm/pterm"
